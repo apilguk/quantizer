@@ -2,7 +2,7 @@
   "name": "quantizer",
   "version": "2.0.2",
   "description": "State Management System",
-  "main": "/dist/quantizer.js",
+  "main": "./src",
   "scripts": {
     "build": "cross-env NODE_ENV=build babel-node scripts/build --umd",
     "check": "npm run test:src && npm run lint:src",
@@ -76,7 +76,7 @@
   "npmName": "quantizer",
   "npmFileMap": [
     {
-      "basePath": "/dist/",
+      "basePath": "/src/",
       "files": [
         "*.js"
       ]
