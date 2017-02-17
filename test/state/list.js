@@ -132,7 +132,7 @@ describe('List', () => {
   });
 
   describe('static', () => {
-    it('from instance', () => {
+    it('from type instance', () => {
       class SomeClass extends State.Map {};
       const type = new Type({
         name: 'SomeClass',
@@ -140,6 +140,17 @@ describe('List', () => {
         validate: (value) => true,
       });
       const list = new State.List([], type);
+
+      list.push({});
+      list.push({});
+
+      assert.instanceOf(list.at(0), SomeClass);
+      assert.instanceOf(list.at(1), SomeClass);
+    });
+
+    it('from instance', () => {
+      class SomeClass extends State.Map {};
+      const list = new State.List([], SomeClass);
 
       list.push({});
       list.push({});

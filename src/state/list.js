@@ -11,7 +11,15 @@ export default class List extends TypedNode {
 
     if (of) {
       if (!is.factory(of)) {
-        this.type = of;
+        if (!is.type(of) && !is.schema(of)) {
+          const Instance = of;
+
+          this.type = {
+            parse: v => new Instance(v),
+          };
+        } else {
+          this.type = of;
+        }
       } else {
         this.factory = of;
       }
@@ -59,6 +67,8 @@ export default class List extends TypedNode {
 
   push(value) {
     const sourceValue = getSourceValue(value);
+
+    // console.log(this.type)
 
     if (this.type) {
       try {
