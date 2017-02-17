@@ -767,7 +767,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    if (of) {
 	      if (!_is2.default.factory(of)) {
-	        _this.type = of;
+	        if (!_is2.default.type(of) && !_is2.default.schema(of)) {
+	          var Instance = of;
+
+	          _this.type = {
+	            parse: function parse(v) {
+	              return new Instance(v);
+	            }
+	          };
+	        } else {
+	          _this.type = of;
+	        }
 	      } else {
 	        _this.factory = of;
 	      }
@@ -821,6 +831,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    key: 'push',
 	    value: function push(value) {
 	      var sourceValue = (0, _utils.getSourceValue)(value);
+
+	      // console.log(this.type)
 
 	      if (this.type) {
 	        try {
