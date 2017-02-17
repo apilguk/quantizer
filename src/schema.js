@@ -1,6 +1,7 @@
 import Type from './type';
 import is from './is';
-import DefaultNodesFactory, { Map, Any, List } from './state';
+import { Map, Any, List } from './state';
+import DefaultNodesFactory from './state/default_factory';
 
 export default class Schema {
   constructor(name, fileds) {

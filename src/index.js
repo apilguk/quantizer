@@ -1,10 +1,11 @@
 import * as Utils from './utils';
 import Factory from './factory';
+import Schema from './schema';
 import TypedNode from './node';
 import Type from './type';
-import Schema from './schema';
 import is from './is';
-import DefaultFactory, * as State from './state';
+import * as State from './state';
+import DefaultFactory from './state/default_factory';
 
 export {
   Utils,
