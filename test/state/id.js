@@ -8,7 +8,7 @@ describe('ID', () => {
     assert.equal(id.get().length, 36);
   });
 
-  it('Iinit with value', () => {
+  it('Init with value', () => {
     const value = 'idididid';
     const id = new State.ID(value);
     assert.equal(id.get(), value);
