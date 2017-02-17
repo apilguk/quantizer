@@ -1,0 +1,33 @@
+language: node_js
+node_js:
+  - "7"
+script:
+  - npm run test:src
+  - npm run lint:src
+  - npm run build
+branches:
+  only:
+    - master
+install:
+  - npm install
+deploy:
+  provider: releases
+  api_key:
+    secure: $GH_KEY
+  file: "dist/quantizer.js"
+  skip_cleanup: true
+  on:
+    tags: false
+deploy:
+  provider: npm
+  api_key: $NPM_KEY
+  email: $NPM_EMAIL
+  on:
+    brunch: master
+dependencies:
+  pre:
+    - echo "//registry.npmjs.org/:_authToken=$NPM_KEY" >> ~/.npmrc
+cache:
+  directories:
+  - $HOME/.npm
+  - $HOME/node_modules
