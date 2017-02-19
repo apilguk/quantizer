@@ -11,7 +11,7 @@ export default {
   string: value => typeof value === 'string',
   map: value => !(value === null) && !Array.isArray(value) && (typeof value === 'object'),
   factory: value => value[sym('factory')],
-  node: value => value[sym('node')],
-  schema: value => value[sym('schema')],
-  type: value => value[sym('type')],
+  node: value => !!value[sym('node')],
+  schema: value => !!value[sym('schema')],
+  type: value => !!value[sym('type')],
 };
