@@ -5,7 +5,7 @@ export function factoryCreator(fn) {
 }
 
 export function sym(name) {
-  return `<${name}>`;
+  return `[[${name}]]`;
 }
 
 export function keyedIterator() {
