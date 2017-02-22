@@ -107,3 +107,15 @@ Type.String = new Type({
   instance: State.String,
   validate: is.string,
 });
+
+Type.UUID = new Type({
+  name: 'UUID',
+  instance: State.UUID,
+  validate: is.uuid,
+});
+
+Type.ObjectID = new Type({
+  name: 'ObjectID',
+  instance: State.ObjectID,
+  validate: is.object_id,
+});

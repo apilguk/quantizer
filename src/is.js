@@ -14,4 +14,6 @@ export default {
   node: value => !!value[sym('node')],
   schema: value => !!value[sym('schema')],
   type: value => !!value[sym('type')],
+  uuid: value => typeof value === 'string' && value.length === 36,
+  object_id: value => typeof value === 'string' && value.length === 24,
 };
