@@ -10,6 +10,10 @@ export default {
   boolean: value => typeof value === 'boolean',
   string: value => typeof value === 'string',
   map: value => !(value === null) && !Array.isArray(value) && (typeof value === 'object'),
+  factory: value => value[sym('factory')],
+  node: value => !!value[sym('node')],
+  schema: value => !!value[sym('schema')],
+  type: value => !!value[sym('type')],
   uuid: value => typeof value === 'string' && value.length === 36,
   object_id: value => typeof value === 'string' && value.length === 24,
 };
