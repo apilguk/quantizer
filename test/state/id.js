@@ -5,7 +5,7 @@ import { State } from '../../src';
 describe('ID types', () => {
   describe('UUID', () => {
     it('Init without value', () => {
-      const id = new State.UUID();
+      const id = new State.UUID('[[id]]');
 
       assert.equal(id.get().length, 36);
     });
@@ -20,7 +20,7 @@ describe('ID types', () => {
 
   describe('ObjectID', () => {
     it('Init without value', () => {
-      const id = new State.ObjectID();
+      const id = new State.ObjectID('[[id]]');
 
       assert.equal(id.get().length, 24);
     });

@@ -11,8 +11,8 @@ const FUNCTION = () => {};
 const LIST = [];
 const MAP = {};
 const PROMISE = Promise.resolve();
-const UUID = new State.UUID().get();
-const ObjectID = State.ObjectID.GenerateValue();
+const UUID = new State.UUID('[[id]]').get();
+const ObjectID = new State.ObjectID('[[id]]').get();
 class NODE extends TypedNode {
 };
 

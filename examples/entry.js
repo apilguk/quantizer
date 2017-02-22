@@ -23,16 +23,13 @@ const MessageSchema = new Schema('MessageSchema', {
 });
 
 const UserSchema = new Schema('UserSchema', {
-  id: Type.String,
+  id: Type.ObjectID,
   age: Type.Number,
   messages: [MessageSchema],
 });
 
 window.schema = new Schema('CellSchema', {
-  name: Type.String,
+  id: Type.ObjectID,
   profile: UserSchema,
 });
-
-
-
 

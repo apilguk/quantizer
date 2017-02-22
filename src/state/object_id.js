@@ -1,10 +1,15 @@
 import TypedNode from '../node';
+import { sym } from '../utils';
 
 export default class ObjectID extends TypedNode {
   constructor(value) {
     super();
 
-    this.value = value || ObjectID.GenerateValue();
+    if (value === sym('id')) {
+      this.value = ObjectID.GenerateValue();
+    } else {
+      this.value = value;
+    }
   }
 
   static GenerateValue(timestamp) {
