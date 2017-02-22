@@ -7,7 +7,6 @@ const testError = {
   expected: 'Num'
 }
 describe('Schema', () => {
-
   it('initType', () => {
     const schema = new Schema('TestSchema', {
       id: new Type({
@@ -18,6 +17,7 @@ describe('Schema', () => {
     });
     assert.deepEqual(schema.name, 'TestSchema');
   });
+
   describe('validation', () => {
 
     it('field with correct values', () => {

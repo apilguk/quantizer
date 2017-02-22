@@ -1,10 +1,11 @@
 import * as State from './state';
 import is from './is';
-
 import { sym } from './utils';
 
 export default class Type {
   constructor(opts) {
+    this[sym('type')] = true;
+
     this.name = opts.name;
     this.validate = opts.validate;
     this.instance = opts.instance;
@@ -41,31 +42,32 @@ export default class Type {
   }
 
   static defineType(value) {
-    if (is._undefined(value)) {
-      return 'Undefined';
-    } else if (is._null(value)) {
-      return 'Null';
-    } else if (is.schema(value)) {
-      return 'Schema';
-    } else if (is.type(value)) {
-      return 'Type';
-    } else if (is.list(value)) {
-      return 'List';
-    } if (is.number(value)) {
-      return 'Number';
-    } else if (is.string(value)) {
-      return 'String';
-    } else if (is.boolean(value)) {
-      return 'Boolean';
-    } else if (is.map(value)) {
-      return 'Map';
-    } else if (typeof value === 'function') {
-      return 'Function';
-    } else if (value[sym('node')]) {
-      return value[sym('type')].name;
+    switch (true) {
+      case is._undefined(value):
+        return 'Undefined';
+      case is._null(value):
+        return 'Null';
+      case is.schema(value):
+        return 'Schema';
+      case is.type(value):
+        return 'Type';
+      case is.list(value):
+        return 'List';
+      case is.number(value):
+        return 'Number';
+      case is.string(value):
+        return 'String';
+      case is.boolean(value):
+        return 'Boolean';
+      case is.map(value):
+        return 'Map';
+      case typeof value === 'function':
+        return 'Function';
+      case is.node(value):
+        return 'TypedNode';
+      default:
+        return 'Unknown';
     }
-
-    return 'Unknown';
   }
 }
 
@@ -104,4 +106,16 @@ Type.String = new Type({
   name: 'String',
   instance: State.String,
   validate: is.string,
+});
+
+Type.UUID = new Type({
+  name: 'UUID',
+  instance: State.UUID,
+  validate: is.uuid,
+});
+
+Type.ObjectID = new Type({
+  name: 'ObjectID',
+  instance: State.ObjectID,
+  validate: is.object_id,
 });

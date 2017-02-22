@@ -1,10 +1,13 @@
-import Type from './type';
 import is from './is';
-import { Map, Any, List } from './state';
 import DefaultNodesFactory from './state/default_factory';
+import Type from './type';
+import { Map, Any, List } from './state';
+import { sym } from './utils';
 
 export default class Schema {
   constructor(name, fileds) {
+    this[sym('schema')] = true;
+
     this.name = name;
     this.fields = {};
 

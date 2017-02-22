@@ -4,14 +4,16 @@ import Number from './number';
 import String from './string';
 import List from './list';
 import Map from './map';
-import ID from './id';
+import ObjectID from './object_id';
+import UUID from './uuid';
 
 export {
   Any,
   Boolean,
   Number,
   String,
-  ID,
   Map,
   List,
+  ObjectID,
+  UUID,
 };

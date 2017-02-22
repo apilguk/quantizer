@@ -1,5 +1,5 @@
 import { expect, assert } from 'chai';
-import { is, TypedNode, Schema, Type, Factory } from '../src';
+import { is, TypedNode, Schema, Type, Factory, State } from '../src';
 
 const NUMBER = 10;
 const STRING = 'str';
@@ -11,6 +11,8 @@ const FUNCTION = () => {};
 const LIST = [];
 const MAP = {};
 const PROMISE = Promise.resolve();
+const UUID = new State.UUID().get();
+const ObjectID = State.ObjectID.GenerateValue();
 class NODE extends TypedNode {
 };
 
@@ -54,5 +56,11 @@ describe('is', () => {
   });
   it('promise', () => {
     expect(is.promise(PROMISE)).to.be.true;
+  });
+  it('uuid', () => {
+    expect(is.uuid(UUID)).to.be.true;
+  });
+  it('object_id', () => {
+    expect(is.object_id(ObjectID)).to.be.true;
   });
 });
