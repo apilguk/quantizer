@@ -17,4 +17,6 @@ export default {
   node: value => value instanceof TypedNode,
   schema: value => value instanceof Schema,
   type: value => value instanceof Type,
+  uuid: value => typeof value === 'string' && value.length === 36,
+  object_id: value => typeof value === 'string' && value.length === 24,
 };
