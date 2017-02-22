@@ -1,5 +1,9 @@
+import { sym } from './utils';
+
 export default class FactoryFunction {
   constructor(factory) {
+    this[sym('factory')] = true;
+
     this.func = factory.bind(null);
   }
 
