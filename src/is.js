@@ -15,8 +15,8 @@ const is = {
   schema: value => !!value[sym('schema')],
   sym: value => is.string(value) && (/\[\[(\w+)\]\]/g).test(value), /* eslint no-useless-escape: 1 */
   type: value => !!value[sym('type')],
-  uuid: value => is.sym(value) || (is.string(value) && value.length === 36),
-  object_id: value => is.sym(value) || (is.string(value) && value.length === 24),
+  uuid: value => is.sym(value) || is.string(value) || is.number(value),
+  object_id: value => is.sym(value) || is.string(value) || is.number(value),
 };
 
 export default is;

@@ -34,7 +34,11 @@ export default class Schema {
         const innerType = Type.defineType(input[0]);
         let innerSchema = new Schema(key, input[0]);
 
-        if (innerType === 'Schema' || innerType === 'Type') {
+        if (
+          innerType === 'Schema' ||
+          innerType === 'Type' ||
+          is.node(input[0])
+        ) {
           innerSchema = input[0];
         }
 

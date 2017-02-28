@@ -13,3 +13,5 @@ export default class TypedNode {
     this.value = value;
   }
 }
+
+TypedNode[sym('node')] = true;

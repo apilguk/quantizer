@@ -15,7 +15,7 @@ export default class List extends TypedNode {
           const Instance = of;
 
           this.type = {
-            parse: v => new Instance(v),
+            parse: (...args) => new Instance(...args),
           };
         } else {
           this.type = of;

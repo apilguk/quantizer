@@ -164,6 +164,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.default = TypedNode;
 
+
+	TypedNode[(0, _utils.sym)('node')] = true;
+
 /***/ },
 /* 3 */
 /***/ function(module, exports, __webpack_require__) {
@@ -222,10 +225,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return !!value[(0, _utils.sym)('type')];
 	  },
 	  uuid: function uuid(value) {
-	    return is.sym(value) || is.string(value) && value.length === 36;
+	    return is.sym(value) || is.string(value) || is.number(value);
 	  },
 	  object_id: function object_id(value) {
-	    return is.sym(value) || is.string(value) && value.length === 24;
+	    return is.sym(value) || is.string(value) || is.number(value);
 	  }
 	};
 
@@ -243,7 +246,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _utils = __webpack_require__(1);
 
-	var _type = __webpack_require__(6);
+	var _type = __webpack_require__(5);
 
 	var _type2 = _interopRequireDefault(_type);
 
@@ -303,64 +306,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.UUID = exports.ObjectID = exports.List = exports.Map = exports.String = exports.Number = exports.Boolean = exports.Any = undefined;
-
-	var _any = __webpack_require__(17);
-
-	var _any2 = _interopRequireDefault(_any);
-
-	var _boolean = __webpack_require__(8);
-
-	var _boolean2 = _interopRequireDefault(_boolean);
-
-	var _number = __webpack_require__(11);
-
-	var _number2 = _interopRequireDefault(_number);
-
-	var _string = __webpack_require__(12);
-
-	var _string2 = _interopRequireDefault(_string);
-
-	var _list = __webpack_require__(9);
-
-	var _list2 = _interopRequireDefault(_list);
-
-	var _map = __webpack_require__(10);
-
-	var _map2 = _interopRequireDefault(_map);
-
-	var _object_id = __webpack_require__(18);
-
-	var _object_id2 = _interopRequireDefault(_object_id);
-
-	var _uuid = __webpack_require__(19);
-
-	var _uuid2 = _interopRequireDefault(_uuid);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	exports.Any = _any2.default;
-	exports.Boolean = _boolean2.default;
-	exports.Number = _number2.default;
-	exports.String = _string2.default;
-	exports.Map = _map2.default;
-	exports.List = _list2.default;
-	exports.ObjectID = _object_id2.default;
-	exports.UUID = _uuid2.default;
-
-/***/ },
-/* 6 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _state = __webpack_require__(5);
+	var _state = __webpack_require__(6);
 
 	var State = _interopRequireWildcard(_state);
 
@@ -508,6 +457,60 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 /***/ },
+/* 6 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.UUID = exports.ObjectID = exports.List = exports.Map = exports.String = exports.Number = exports.Boolean = exports.Any = undefined;
+
+	var _any = __webpack_require__(17);
+
+	var _any2 = _interopRequireDefault(_any);
+
+	var _boolean = __webpack_require__(8);
+
+	var _boolean2 = _interopRequireDefault(_boolean);
+
+	var _number = __webpack_require__(11);
+
+	var _number2 = _interopRequireDefault(_number);
+
+	var _string = __webpack_require__(12);
+
+	var _string2 = _interopRequireDefault(_string);
+
+	var _list = __webpack_require__(9);
+
+	var _list2 = _interopRequireDefault(_list);
+
+	var _map = __webpack_require__(10);
+
+	var _map2 = _interopRequireDefault(_map);
+
+	var _object_id = __webpack_require__(18);
+
+	var _object_id2 = _interopRequireDefault(_object_id);
+
+	var _uuid = __webpack_require__(19);
+
+	var _uuid2 = _interopRequireDefault(_uuid);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.Any = _any2.default;
+	exports.Boolean = _boolean2.default;
+	exports.Number = _number2.default;
+	exports.String = _string2.default;
+	exports.Map = _map2.default;
+	exports.List = _list2.default;
+	exports.ObjectID = _object_id2.default;
+	exports.UUID = _uuid2.default;
+
+/***/ },
 /* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -612,6 +615,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _node2 = _interopRequireDefault(_node);
 
+	var _type = __webpack_require__(5);
+
+	var _type2 = _interopRequireDefault(_type);
+
 	var _utils = __webpack_require__(1);
 
 	var _is = __webpack_require__(3);
@@ -646,8 +653,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	          var Instance = of;
 
 	          _this.type = {
-	            parse: function parse(v) {
-	              return new Instance(v);
+	            parse: function parse() {
+	              for (var _len = arguments.length, args = Array(_len), _key2 = 0; _key2 < _len; _key2++) {
+	                args[_key2] = arguments[_key2];
+	              }
+
+	              return new (Function.prototype.bind.apply(Instance, [null].concat(args)))();
 	            }
 	          };
 	        } else {
@@ -724,8 +735,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'get',
 	    value: function get() {
-	      for (var _len = arguments.length, args = Array(_len), _key2 = 0; _key2 < _len; _key2++) {
-	        args[_key2] = arguments[_key2];
+	      for (var _len2 = arguments.length, args = Array(_len2), _key3 = 0; _key3 < _len2; _key3++) {
+	        args[_key3] = arguments[_key3];
 	      }
 
 	      return this.map(function (node) {
@@ -1198,7 +1209,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _node2 = _interopRequireDefault(_node);
 
-	var _type = __webpack_require__(6);
+	var _type = __webpack_require__(5);
 
 	var _type2 = _interopRequireDefault(_type);
 
@@ -1214,7 +1225,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _default_factory2 = _interopRequireDefault(_default_factory);
 
-	var _state = __webpack_require__(5);
+	var _state = __webpack_require__(6);
 
 	var State = _interopRequireWildcard(_state);
 
@@ -1254,11 +1265,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _default_factory2 = _interopRequireDefault(_default_factory);
 
-	var _type = __webpack_require__(6);
+	var _type = __webpack_require__(5);
 
 	var _type2 = _interopRequireDefault(_type);
 
-	var _state = __webpack_require__(5);
+	var _state = __webpack_require__(6);
 
 	var _utils = __webpack_require__(1);
 
@@ -1303,7 +1314,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          var innerType = _type2.default.defineType(input[0]);
 	          var innerSchema = new Schema(key, input[0]);
 
-	          if (innerType === 'Schema' || innerType === 'Type') {
+	          if (innerType === 'Schema' || innerType === 'Type' || _is2.default.node(input[0])) {
 	            innerSchema = input[0];
 	          }
 
