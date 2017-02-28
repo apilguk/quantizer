@@ -5,7 +5,7 @@ import { Map, Any, List } from './state';
 import { sym } from './utils';
 
 export default class Schema {
-  constructor(name, fileds) {
+  constructor(name = 'Unnamed', fileds) {
     this[sym('schema')] = true;
 
     this.name = name;

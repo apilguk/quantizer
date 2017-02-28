@@ -174,69 +174,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 
-	var _utils = __webpack_require__(1);
-
-	var _type = __webpack_require__(6);
-
-	var _type2 = _interopRequireDefault(_type);
-
-	var _node = __webpack_require__(2);
-
-	var _node2 = _interopRequireDefault(_node);
-
-	var _boolean = __webpack_require__(8);
-
-	var _boolean2 = _interopRequireDefault(_boolean);
-
-	var _number = __webpack_require__(11);
-
-	var _number2 = _interopRequireDefault(_number);
-
-	var _string = __webpack_require__(12);
-
-	var _string2 = _interopRequireDefault(_string);
-
-	var _list = __webpack_require__(9);
-
-	var _list2 = _interopRequireDefault(_list);
-
-	var _map = __webpack_require__(10);
-
-	var _map2 = _interopRequireDefault(_map);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	exports.default = (0, _utils.factoryCreator)(function (value) {
-	  if (value instanceof _node2.default) {
-	    return value;
-	  }
-
-	  switch (_type2.default.defineType(value)) {
-	    case 'Map':
-	      return new _map2.default(value);
-	    case 'List':
-	      return new _list2.default(value);
-	    case 'String':
-	      return new _string2.default(value);
-	    case 'Number':
-	      return new _number2.default(value);
-	    case 'Boolean':
-	      return new _boolean2.default(value);
-	    default:
-	      return value;
-	  }
-	});
-
-/***/ },
-/* 4 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 	var _utils = __webpack_require__(1);
@@ -293,6 +230,69 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	exports.default = is;
+
+/***/ },
+/* 4 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _utils = __webpack_require__(1);
+
+	var _type = __webpack_require__(6);
+
+	var _type2 = _interopRequireDefault(_type);
+
+	var _node = __webpack_require__(2);
+
+	var _node2 = _interopRequireDefault(_node);
+
+	var _boolean = __webpack_require__(8);
+
+	var _boolean2 = _interopRequireDefault(_boolean);
+
+	var _number = __webpack_require__(11);
+
+	var _number2 = _interopRequireDefault(_number);
+
+	var _string = __webpack_require__(12);
+
+	var _string2 = _interopRequireDefault(_string);
+
+	var _list = __webpack_require__(9);
+
+	var _list2 = _interopRequireDefault(_list);
+
+	var _map = __webpack_require__(10);
+
+	var _map2 = _interopRequireDefault(_map);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = (0, _utils.factoryCreator)(function (value) {
+	  if (value instanceof _node2.default) {
+	    return value;
+	  }
+
+	  switch (_type2.default.defineType(value)) {
+	    case 'Map':
+	      return new _map2.default(value);
+	    case 'List':
+	      return new _list2.default(value);
+	    case 'String':
+	      return new _string2.default(value);
+	    case 'Number':
+	      return new _number2.default(value);
+	    case 'Boolean':
+	      return new _boolean2.default(value);
+	    default:
+	      return value;
+	  }
+	});
 
 /***/ },
 /* 5 */
@@ -364,7 +364,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var State = _interopRequireWildcard(_state);
 
-	var _is = __webpack_require__(4);
+	var _is = __webpack_require__(3);
 
 	var _is2 = _interopRequireDefault(_is);
 
@@ -614,11 +614,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _utils = __webpack_require__(1);
 
-	var _is = __webpack_require__(4);
+	var _is = __webpack_require__(3);
 
 	var _is2 = _interopRequireDefault(_is);
 
-	var _default_factory = __webpack_require__(3);
+	var _default_factory = __webpack_require__(4);
 
 	var _default_factory2 = _interopRequireDefault(_default_factory);
 
@@ -865,7 +865,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _utils = __webpack_require__(1);
 
-	var _default_factory = __webpack_require__(3);
+	var _default_factory = __webpack_require__(4);
 
 	var _default_factory2 = _interopRequireDefault(_default_factory);
 
@@ -1206,11 +1206,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _schema2 = _interopRequireDefault(_schema);
 
-	var _is = __webpack_require__(4);
+	var _is = __webpack_require__(3);
 
 	var _is2 = _interopRequireDefault(_is);
 
-	var _default_factory = __webpack_require__(3);
+	var _default_factory = __webpack_require__(4);
 
 	var _default_factory2 = _interopRequireDefault(_default_factory);
 
@@ -1246,11 +1246,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _is = __webpack_require__(4);
+	var _is = __webpack_require__(3);
 
 	var _is2 = _interopRequireDefault(_is);
 
-	var _default_factory = __webpack_require__(3);
+	var _default_factory = __webpack_require__(4);
 
 	var _default_factory2 = _interopRequireDefault(_default_factory);
 
@@ -1267,7 +1267,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	var Schema = function () {
-	  function Schema(name, fileds) {
+	  function Schema() {
+	    var name = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'Unnamed';
+	    var fileds = arguments[1];
+
 	    _classCallCheck(this, Schema);
 
 	    this[(0, _utils.sym)('schema')] = true;
@@ -1396,10 +1399,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _node2 = _interopRequireDefault(_node);
 
-	var _default_factory = __webpack_require__(3);
-
-	var _default_factory2 = _interopRequireDefault(_default_factory);
-
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1412,13 +1411,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	  _inherits(Any, _TypedNode);
 
 	  function Any(value) {
-	    var _ret;
-
 	    _classCallCheck(this, Any);
 
 	    var _this = _possibleConstructorReturn(this, (Any.__proto__ || Object.getPrototypeOf(Any)).call(this));
 
-	    return _ret = _default_factory2.default.get(value), _possibleConstructorReturn(_this, _ret);
+	    _this.value = value;
+	    return _this;
 	  }
 
 	  return Any;
