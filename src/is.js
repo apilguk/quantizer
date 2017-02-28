@@ -1,6 +1,6 @@
 import { sym } from './utils';
 
-export default {
+const is = {
   _null: value => value === null,
   _undefined: value => value === undefined,
   func: value => typeof value === 'function',
@@ -13,7 +13,10 @@ export default {
   factory: value => value[sym('factory')],
   node: value => !!value[sym('node')],
   schema: value => !!value[sym('schema')],
+  sym: value => is.string(value) && (/\[\[(\w+)\]\]/g).test(value), /* eslint no-useless-escape: 1 */
   type: value => !!value[sym('type')],
-  uuid: value => typeof value === 'string' && value.length === 36,
-  object_id: value => typeof value === 'string' && value.length === 24,
+  uuid: value => is.sym(value) || (is.string(value) && value.length === 36),
+  object_id: value => is.sym(value) || (is.string(value) && value.length === 24),
 };
+
+export default is;

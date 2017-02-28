@@ -241,7 +241,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _utils = __webpack_require__(1);
 
-	exports.default = {
+	var is = {
 	  _null: function _null(value) {
 	    return value === null;
 	  },
@@ -278,16 +278,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	  schema: function schema(value) {
 	    return !!value[(0, _utils.sym)('schema')];
 	  },
+	  sym: function sym(value) {
+	    return is.string(value) && /\[\[(\w+)\]\]/g.test(value);
+	  }, /* eslint no-useless-escape: 1 */
 	  type: function type(value) {
 	    return !!value[(0, _utils.sym)('type')];
 	  },
 	  uuid: function uuid(value) {
-	    return typeof value === 'string' && value.length === 36;
+	    return is.sym(value) || is.string(value) && value.length === 36;
 	  },
 	  object_id: function object_id(value) {
-	    return typeof value === 'string' && value.length === 24;
+	    return is.sym(value) || is.string(value) && value.length === 24;
 	  }
 	};
+
+	exports.default = is;
 
 /***/ },
 /* 5 */

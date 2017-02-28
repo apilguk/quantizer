@@ -54,6 +54,9 @@ describe('is', () => {
   it('factory', () => {
     expect(is.factory(new Factory(() => {}))).to.be.true;
   });
+  it('sym', () => {
+    expect(is.sym('[[id]]')).to.be.true;
+  });
   it('promise', () => {
     expect(is.promise(PROMISE)).to.be.true;
   });
