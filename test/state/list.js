@@ -177,4 +177,13 @@ describe('List', () => {
       expect(list.at(1).get('color')).to.equal('grey');
     });
   });
+
+  it('iterator', () => {
+    const list = new State.List([1, 2, 3], State.Number);
+    const res = [];
+    for (const i of list) {
+      res.push(i.get());
+    }
+    assert.deepEqual(res, [1, 2, 3]);
+  })
 });

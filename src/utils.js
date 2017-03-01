@@ -25,7 +25,7 @@ export function indexedIterator() {
   return {
     next: () => ({
       value: this.at(index),
-      done: (index += 1) >= this.length,
+      done: (index += 1) > this.length,
     }),
   };
 }
