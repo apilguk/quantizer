@@ -65,7 +65,7 @@ export default class Type {
         return 'Boolean';
       case is.map(value):
         return 'Map';
-      case typeof value === 'function':
+      case is.func(value):
         return 'Function';
       case is.node(value):
         return 'TypedNode';
