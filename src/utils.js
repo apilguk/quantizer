@@ -12,10 +12,13 @@ export function keyedIterator() {
   let index = 0;
 
   return {
-    next: () => ({
-      value: this.find(this.keys[index]),
-      done: (index += 1) >= this.keys.length,
-    }),
+    next: () => {
+      const done = (index += 1) >= this.keys.length;
+      return {
+        value: this.find(this.keys[index]),
+        done,
+      };
+    },
   };
 }
 
@@ -23,10 +26,13 @@ export function indexedIterator() {
   let index = 0;
 
   return {
-    next: () => ({
-      value: this.at(index),
-      done: (index += 1) > this.length,
-    }),
+    next: () => {
+      const done = (index += 1) > this.length;
+      return {
+        value: this.at(index),
+        done,
+      };
+    },
   };
 }
 
