@@ -27,9 +27,10 @@ export function indexedIterator() {
 
   return {
     next: () => {
+      const value = this.at(index);
       const done = (index += 1) > this.length;
       return {
-        value: this.at(index),
+        value,
         done,
       };
     },
