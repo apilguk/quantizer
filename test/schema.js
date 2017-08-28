@@ -4,8 +4,8 @@ import { is, Schema, Type } from '../src';
 const Num = value => ({ value });
 const testError = {
   actual: 'String',
-  expected: 'Num'
-}
+  expected: 'Num',
+};
 describe('Schema', () => {
   it('initType', () => {
     const schema = new Schema('TestSchema', {
@@ -19,7 +19,6 @@ describe('Schema', () => {
   });
 
   describe('validation', () => {
-
     it('field with correct values', () => {
       const schema = new Schema('TestSchema', {
         x: new Type({
@@ -98,6 +97,27 @@ describe('Schema', () => {
       }
     });
 
+    it('with not providing required value', () => {
+      const schema = new Schema('TestSchema', {
+        x: new Type({
+          name: 'Num',
+          instance: e => ({ value: e }),
+          validate: () => true,
+          required: true,
+        }),
+        y: new Type({
+          name: 'Num',
+          instance: Num,
+          validate: is.number,
+        }),
+      });
+      try {
+        schema.validate({ y: 2 });
+      } catch (err) {
+        assert.deepEqual(err, { x: 'Value is not defined' });
+      }
+    });
+
     it('deep schema with incorrect values', () => {
       const Milestone = new Schema('MessageSchema', {
         id: Type.String,
@@ -106,13 +126,13 @@ describe('Schema', () => {
       const MessageSchema = new Schema('MessageSchema', {
         id: Type.String,
         text: Type.String,
-        history: [Milestone]
+        history: [Milestone],
       });
 
       const UserSchema = new Schema('UserSchema', {
         id: Type.String,
         age: Type.Number,
-        messages: [MessageSchema]
+        messages: [MessageSchema],
       });
 
       const schema = new Schema('CellSchema', {
@@ -129,35 +149,35 @@ describe('Schema', () => {
               {
                 id: 1,
                 history: [
-                  { id: 1 }
-                ]
-              }]
-          }
+                  { id: 1 },
+                ],
+              }],
+          },
         });
       } catch (err) {
         assert.deepEqual(err, {
           name: {
             actual: 'Number',
-            expected: 'String'
+            expected: 'String',
           },
           profile: {
             id: {
               actual: 'Number',
-              expected: 'String'
+              expected: 'String',
             },
             messages: {
               history: {
                 id: {
                   actual: 'Number',
-                  expected: 'String'
-                }
+                  expected: 'String',
+                },
               },
               id: {
                 actual: 'Number',
-                expected: 'String'
-              }
-            }
-          }
+                expected: 'String',
+              },
+            },
+          },
         });
       }
     });

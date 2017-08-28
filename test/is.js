@@ -14,7 +14,7 @@ const PROMISE = Promise.resolve();
 const UUID = new State.UUID('[[id]]').get();
 const ObjectID = new State.ObjectID('[[id]]').get();
 class NODE extends TypedNode {
-};
+}
 
 describe('is', () => {
   it('_null', () => {

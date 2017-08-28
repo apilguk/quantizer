@@ -94,6 +94,18 @@ export default class Schema {
       }
     }
 
+    Object.keys(this.fields).forEach((key) => {
+      const type = this.fields[key];
+      if (
+        type[sym('type')] &&
+        type.required &&
+        typeof obj[key] === 'undefined'
+      ) {
+        validationFailed = true;
+        errors[key] = 'Value is not defined';
+      }
+    });
+
     if (validationFailed) {
       throw errors;
     }

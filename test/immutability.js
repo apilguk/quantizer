@@ -2,19 +2,18 @@ import { expect, assert } from 'chai';
 import { State } from '../src';
 
 describe('Immutability', () => {
-
   it('Map', () => {
     const innerStruct = {
       lesson: 1,
-      module: 1
+      module: 1,
     };
     const test = new State.Map({
       id: 1,
       name: 'John',
-      progress: innerStruct
+      progress: innerStruct,
     });
 
-    let result = test.get();
+    const result = test.get();
 
     result.id = 10;
     result.progress.lesson = 2;
@@ -25,8 +24,8 @@ describe('Immutability', () => {
       name: 'John',
       progress: {
         lesson: 1,
-        module: 1
-      }
+        module: 1,
+      },
     });
 
     assert.deepEqual(result, {
@@ -34,21 +33,21 @@ describe('Immutability', () => {
       name: 'Mark',
       progress: {
         lesson: 2,
-        module: 1
-      }
+        module: 1,
+      },
     });
 
     assert.deepEqual(innerStruct, {
       lesson: 1,
-      module: 1
+      module: 1,
     });
   });
 
   it('List', () => {
     const test = new State.List(['one', 'two']);
-    let result = test.get();
+    const result = test.get();
 
     result.push('three');
-    assert.deepEqual(test.get(), ['one', 'two'])
+    assert.deepEqual(test.get(), ['one', 'two']);
   });
 });
