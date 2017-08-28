@@ -1,4 +1,4 @@
-import { expect, assert } from 'chai';
+import { expect } from 'chai';
 import { is, TypedNode, Schema, Type, Factory, State } from '../src';
 
 const NUMBER = 10;

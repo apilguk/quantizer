@@ -1,4 +1,4 @@
-import { expect, assert } from 'chai';
+import { assert } from 'chai';
 import { is, Schema, Type } from '../src';
 
 const Num = value => ({ value });

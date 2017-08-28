@@ -21,6 +21,8 @@
     "guard-for-in": 0,
     "no-underscore-dangle": 0,
     "no-throw-literal": 0,
-    "no-new-wrappers": 0
+    "no-new-wrappers": 0,
+    "no-bitwise": ["error", { "int32Hint": true }]
+
   }
 }
