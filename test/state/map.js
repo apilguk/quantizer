@@ -4,7 +4,7 @@ import { State, Schema, Type } from '../../src';
 
 describe('Map', () => {
   it('public methods', () => {
-    let map = new State.Map({});
+    const map = new State.Map({});
 
     assert.isDefined(map.getAttribute);
     assert.isDefined(map.setAttribute);
@@ -61,7 +61,7 @@ describe('Map', () => {
     const map = new State.Map();
 
     map.setAttribute('y', 20);
-    assert.deepEqual(map.get(), {y: 20 });
+    assert.deepEqual(map.get(), { y: 20 });
   });
 
   it('set with floating types', () => {
@@ -74,8 +74,19 @@ describe('Map', () => {
     assert.instanceOf(map.find('x'), State.List);
   });
 
-  it('set with Any value', () => {
+  it('set without required field', () => {
+    try {
+      const map = new State.Map(
+        { a: '0' },
+        new Schema('Test', { a: Type.String.isRequired }),
+      );
+      map.set({ x: '1' });
+    } catch (err) {
+      assert.deepEqual(err, { a: 'Value is not defined' });
+    }
+  });
 
+  it('set with Any value', () => {
     const schema = new Schema('TestSchema', {
       x: Type.Any,
     });

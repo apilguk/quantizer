@@ -56,9 +56,7 @@ describe('List', () => {
     list.map(handler);
 
     list.map((n, index) => {
-
-      assert.deepEqual(n.get(), src[ index ]);
-
+      assert.deepEqual(n.get(), src[index]);
     });
 
     expect(handler).to.have.been.called.exactly(2);
@@ -98,46 +96,46 @@ describe('List', () => {
 
   describe('sortBy', () => {
     it('object key', () => {
-      let list = new State.List([
+      const list = new State.List([
         { id: 1 },
         { id: 4 },
         { id: 2 },
         { id: 5 },
-        { id: 3 }
+        { id: 3 },
       ]);
-      let result = list.sortBy('id').get();
+      const result = list.sortBy('id').get();
 
       assert.deepEqual(result, [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }]);
     });
 
     it('value', () => {
-      let list = new State.List([5, 1, 4, 2, 3]);
-      let result = list.sortBy().get();
+      const list = new State.List([5, 1, 4, 2, 3]);
+      const result = list.sortBy().get();
 
       assert.deepEqual(result, [1, 2, 3, 4, 5]);
     });
   });
 
   it('length', () => {
-    let list = new State.List(['foo', 'bar']);
+    const list = new State.List(['foo', 'bar']);
 
     expect(list.length).to.equal(2);
   });
 
   it('at', () => {
-    let list = new State.List(['foo', 'bar']);
-    let result = list.at(0).get();
+    const list = new State.List(['foo', 'bar']);
+    const result = list.at(0).get();
 
     expect(result).to.equal('foo');
   });
 
   describe('static', () => {
     it('from type instance', () => {
-      class SomeClass extends State.Map {};
+      class SomeClass extends State.Map {}
       const type = new Type({
         name: 'SomeClass',
         instance: SomeClass,
-        validate: (value) => true,
+        validate: value => true,
       });
       const list = new State.List([], type);
 
@@ -149,7 +147,7 @@ describe('List', () => {
     });
 
     it('from instance', () => {
-      class SomeClass extends State.Map {};
+      class SomeClass extends State.Map {}
       const list = new State.List([], SomeClass);
 
       list.push({});
@@ -185,5 +183,5 @@ describe('List', () => {
       res.push(i.get());
     }
     assert.deepEqual(res, [1, 2, 3]);
-  })
+  });
 });

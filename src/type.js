@@ -3,15 +3,19 @@ import is from './is';
 import { sym } from './utils';
 
 export default class Type {
-  constructor(opts) {
+  constructor({ name, validate, instance, required, of, defaultValue }) {
     this[sym('type')] = true;
 
-    this.name = opts.name;
-    this.validate = opts.validate;
-    this.instance = opts.instance;
-    this.required = opts.required;
-    this.defaultValue = opts.defaultValue;
-    this.of = opts.of;
+    this.name = name;
+    this.validate = validate;
+    this.instance = instance;
+    this.required = required;
+    this.defaultValue = defaultValue;
+    this.of = of;
+
+    if (!required) {
+      this.isRequired = new Type({ ...this, required: true });
+    }
 
     return this;
   }

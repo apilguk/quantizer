@@ -48,6 +48,7 @@ export default class Map extends TypedNode {
   }
 
   clear() {
+    this.keys = [];
     this.attributes = {};
   }
 
