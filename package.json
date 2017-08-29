@@ -8,9 +8,7 @@
     "check": "npm run test:src && npm run lint:src",
     "test:src": "babel-node scripts/test",
     "development": "babel-node examples/server/run",
-    "test:examples": "test",
-    "lint:src": "eslint src",
-    "lint:examples": "eslint examples"
+    "lint:src": "eslint src"
   },
   "repository": {
     "type": "git",
