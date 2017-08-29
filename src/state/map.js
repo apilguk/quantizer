@@ -98,9 +98,7 @@ export default class Map extends TypedNode {
   }
 
   find(key) {
-    return typeof this.attributes[key] !== 'undefined'
-      ? this.attributes[key]
-      : undefined;
+    return this.attributes[key];
   }
 
   clone() {
