@@ -1,6 +1,5 @@
-import uuid from 'uuid';
 import TypedNode from '../node';
-import { sym } from '../utils';
+import { sym, uuid } from '../utils';
 
 export default class UUID extends TypedNode {
   constructor(value) {

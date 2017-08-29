@@ -5,7 +5,6 @@ describe('ID types', () => {
   describe('UUID', () => {
     it('init without value', () => {
       const id = new State.UUID('[[id]]');
-
       assert.equal(id.get().length, 36);
     });
 
