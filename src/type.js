@@ -24,10 +24,7 @@ export default class Type {
     const TypeInstace = this.instance;
 
     if (!this.validate(value)) {
-      throw {
-        actual: Type.defineType(value),
-        expected: this.name,
-      };
+      throw new Error(`Expected ${this.name} but found ${Type.defineType(value)}`);
     }
 
     return new TypeInstace(value, this.of);
@@ -39,7 +36,7 @@ export default class Type {
     }
 
     if (this.required) {
-      throw `${this.name}: Default value is not defined.`;
+      throw new Error(`${this.name}: Default value is not defined.`);
     }
 
     return null;

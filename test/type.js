@@ -2,10 +2,7 @@ import { assert } from 'chai';
 import { is, Type } from '../src';
 
 const PrimitiveNode = value => ({ value });
-const testError = {
-  actual: 'String',
-  expected: 'TestType',
-};
+const testError = new Error('Expected Num but found String');
 
 describe('Type', () => {
   it('constructor', () => {

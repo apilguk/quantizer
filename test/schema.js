@@ -2,10 +2,8 @@ import { assert } from 'chai';
 import { is, Schema, Type } from '../src';
 
 const Num = value => ({ value });
-const testError = {
-  actual: 'String',
-  expected: 'Num',
-};
+const testError = new Error('Expected Num but found String');
+
 describe('Schema', () => {
   it('initType', () => {
     const schema = new Schema('TestSchema', {
@@ -156,26 +154,14 @@ describe('Schema', () => {
         });
       } catch (err) {
         assert.deepEqual(err, {
-          name: {
-            actual: 'Number',
-            expected: 'String',
-          },
+          name: testError,
           profile: {
-            id: {
-              actual: 'Number',
-              expected: 'String',
-            },
+            id: testError,
             messages: {
               history: {
-                id: {
-                  actual: 'Number',
-                  expected: 'String',
-                },
+                id: testError,
               },
-              id: {
-                actual: 'Number',
-                expected: 'String',
-              },
+              id: testError,
             },
           },
         });

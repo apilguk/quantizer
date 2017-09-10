@@ -118,8 +118,6 @@ export default class Schema {
   }
 
   find(key) {
-    return typeof this.attributes[key] !== 'undefined'
-      ? this.attributes[key]
-      : undefined;
+    return this.attributes[key];
   }
 }
