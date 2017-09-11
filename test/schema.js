@@ -18,6 +18,88 @@ describe('Schema', () => {
     assert.deepEqual(schema.name, 'TestSchema');
   });
 
+  describe('just validation', () => {
+    it('all valid', () => {
+      const schema = new Schema('TestSchema', {
+        x: new Type({
+          name: 'Num',
+          instance: Num,
+          validate: is.number,
+        }),
+        y: new Type({
+          name: 'Num',
+          instance: Num,
+          validate: is.number,
+        }),
+      });
+      assert.deepEqual(schema.justValidate({ x: 1, y: 1 }), true);
+    });
+
+    it('invalid field', () => {
+      const schema = new Schema('TestSchema', {
+        x: new Type({
+          name: 'Num',
+          instance: Num,
+          validate: is.number,
+        }),
+        y: new Type({
+          name: 'Num',
+          instance: Num,
+          validate: is.number,
+        }),
+      });
+      try {
+        schema.justValidate({ x: 'a', y: 1 });
+      } catch (err) {
+        assert.deepEqual(err, { x: { actual: 'String', expected: 'Num' } });
+      }
+    });
+
+    it('no required field', () => {
+      const schema = new Schema('TestSchema', {
+        x: new Type({
+          name: 'Num',
+          instance: Num,
+          validate: is.number,
+        }),
+        y: new Type({
+          name: 'Num',
+          instance: Num,
+          required: true,
+          validate: is.number,
+        }),
+      });
+      try {
+        schema.justValidate({ x: 2 });
+      } catch (err) {
+        assert.deepEqual(err, { y: 'Value is not defined' });
+      }
+    });
+
+    it('deep validate', () => {
+      const schema1 = new Schema('TestSchema1', {
+        x: new Type({
+          name: 'Num',
+          instance: Num,
+          validate: is.number,
+        }),
+      });
+      const schema2 = new Schema('TestSchema2', {
+        x: new Type({
+          name: 'Num',
+          instance: Num,
+          validate: is.number,
+        }),
+        y: schema1,
+      });
+      try {
+        schema2.justValidate({ x: 2, y: { x: 'a' } });
+      } catch (err) {
+        assert.deepEqual(err, { y: { x: { actual: 'String', expected: 'Num' } }});
+      }
+    });
+  });
+
   describe('validation', () => {
     it('field with correct values', () => {
       const schema = new Schema('TestSchema', {
