@@ -30,10 +30,7 @@ export default class Type {
 
   checkValidation(value) {
     if (!this.validate(value)) {
-      throw {
-        actual: Type.defineType(value),
-        expected: this.name,
-      };
+      throw new Error(`Expected ${this.name} but found ${Type.defineType(value)}`);
     }
     return true;
   }
@@ -44,7 +41,7 @@ export default class Type {
     }
 
     if (this.required) {
-      throw `${this.name}: Default value is not defined.`;
+      throw new Error(`${this.name}: Default value is not defined.`);
     }
 
     return null;
