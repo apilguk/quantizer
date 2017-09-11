@@ -78,6 +78,20 @@ export default class Schema {
     return field.parse(value);
   }
 
+  justValidateField(key, value) {
+    const field = this.fields[key];
+
+    if (field instanceof Any || typeof field === 'undefined') {
+      return true;
+    }
+
+    if (field instanceof Schema) {
+      return field.justValidate(value);
+    }
+
+    return field.checkValidation(value);
+  }
+
   validate(obj) {
     const result = {};
     const errors = {};
@@ -111,6 +125,40 @@ export default class Schema {
     }
 
     return result;
+  }
+
+  justValidate(obj) {
+    const errors = {};
+    let validationFailed = false;
+
+    for (const key in obj) {
+      const value = obj[key];
+
+      try {
+        this.justValidateField(key, value);
+      } catch (err) {
+        validationFailed = true;
+        errors[key] = err;
+      }
+    }
+
+    Object.keys(this.fields).forEach((key) => {
+      const type = this.fields[key];
+      if (
+        type[sym('type')] &&
+        type.required &&
+        typeof obj[key] === 'undefined'
+      ) {
+        validationFailed = true;
+        errors[key] = 'Value is not defined';
+      }
+    });
+
+    if (validationFailed) {
+      throw errors;
+    }
+
+    return true;
   }
 
   parse(value) {

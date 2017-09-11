@@ -23,14 +23,19 @@ export default class Type {
   parse(value) {
     const TypeInstace = this.instance;
 
+    this.checkValidation(value);
+
+    return new TypeInstace(value, this.of);
+  }
+
+  checkValidation(value) {
     if (!this.validate(value)) {
       throw {
         actual: Type.defineType(value),
         expected: this.name,
       };
     }
-
-    return new TypeInstace(value, this.of);
+    return true;
   }
 
   getDefaultValue() {

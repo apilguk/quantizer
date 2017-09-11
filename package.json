@@ -60,14 +60,14 @@
     "express": "^4.14.0",
     "flow-bin": "^0.32.0",
     "html-webpack-plugin": "^2.22.0",
-    "mocha": "^3.0.2",
+    "mocha": "^3.5.2",
     "progress-bar-webpack-plugin": "^1.9.3",
     "request": "^2.75.0",
     "sh": "0.0.3",
     "webpack": "^1.13.2",
     "webpack-dev-middleware": "^1.8.1",
     "webpack-dev-server": "^1.16.1",
-    "webpack-hot-middleware": "^2.12.2"
+    "webpack-hot-middleware": "^2.19.1"
   },
   "npmName": "quantizer",
   "npmFileMap": [
