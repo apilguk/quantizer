@@ -1,11 +1,9 @@
 import { assert } from 'chai';
 import { is, Schema, Type } from '../src';
+import { ValidationError } from '../src/error';
 
 const Num = value => ({ value });
-const testError = {
-  actual: 'String',
-  expected: 'Num',
-};
+
 describe('Schema', () => {
   it('initType', () => {
     const schema = new Schema('TestSchema', {
@@ -18,165 +16,76 @@ describe('Schema', () => {
     assert.deepEqual(schema.name, 'TestSchema');
   });
 
-  describe('just validation', () => {
-    it('all valid', () => {
-      const schema = new Schema('TestSchema', {
-        x: new Type({
-          name: 'Num',
-          instance: Num,
-          validate: is.number,
-        }),
-        y: new Type({
-          name: 'Num',
-          instance: Num,
-          validate: is.number,
-        }),
-      });
-      assert.deepEqual(schema.justValidate({ x: 1, y: 1 }), true);
-    });
-
-    it('invalid field', () => {
-      const schema = new Schema('TestSchema', {
-        x: new Type({
-          name: 'Num',
-          instance: Num,
-          validate: is.number,
-        }),
-        y: new Type({
-          name: 'Num',
-          instance: Num,
-          validate: is.number,
-        }),
-      });
-      try {
-        schema.justValidate({ x: 'a', y: 1 });
-      } catch (err) {
-        assert.deepEqual(err, { x: { actual: 'String', expected: 'Num' } });
-      }
-    });
-
-    it('no required field', () => {
-      const schema = new Schema('TestSchema', {
-        x: new Type({
-          name: 'Num',
-          instance: Num,
-          validate: is.number,
-        }),
-        y: new Type({
-          name: 'Num',
-          instance: Num,
-          required: true,
-          validate: is.number,
-        }),
-      });
-      try {
-        schema.justValidate({ x: 2 });
-      } catch (err) {
-        assert.deepEqual(err, { y: 'Value is not defined' });
-      }
-    });
-
-    it('deep validate', () => {
-      const schema1 = new Schema('TestSchema1', {
-        x: new Type({
-          name: 'Num',
-          instance: Num,
-          validate: is.number,
-        }),
-      });
-      const schema2 = new Schema('TestSchema2', {
-        x: new Type({
-          name: 'Num',
-          instance: Num,
-          validate: is.number,
-        }),
-        y: schema1,
-      });
-      try {
-        schema2.justValidate({ x: 2, y: { x: 'a' } });
-      } catch (err) {
-        assert.deepEqual(err, { y: { x: { actual: 'String', expected: 'Num' } }});
-      }
-    });
-  });
-
   describe('validation', () => {
     it('field with correct values', () => {
       const schema = new Schema('TestSchema', {
-        x: new Type({
-          name: 'Num',
-          instance: Num,
-          validate: is.number,
-        }),
-        y: new Type({
-          name: 'Num',
-          instance: Num,
-          validate: is.number,
-        }),
+        x: Type.Number,
+        y: Type.Number,
       });
-      assert.deepEqual(schema.validateField('x', 1), { value: 1 });
+
+      assert.deepEqual(schema.validate({ x: 1 }), {
+        name: 'TestSchema',
+        count: 0,
+        map: {
+          x: {
+            count: 0,
+            name: 'Number',
+          },
+        },
+      });
     });
 
     it('field with incorrect values', () => {
       const schema = new Schema('TestSchema', {
-        x: new Type({
-          name: 'Num',
-          instance: Num,
-          validate: is.number,
-        }),
-        y: new Type({
-          name: 'Num',
-          instance: Num,
-          validate: is.number,
-        }),
+        x: Type.Number,
+        y: Type.Number,
       });
 
-      try {
-        schema.validateField('x', 'str');
-      } catch (err) {
-        assert.deepEqual(err, testError);
-      }
+      assert.deepEqual(schema.validate({ x: 'str', y: 'str' }), {
+        name: 'TestSchema',
+        count: 2,
+        map: {
+          x: new ValidationError('Number', 'String'),
+          y: new ValidationError('Number', 'String'),
+        },
+      });
     });
 
     it('with correct values', () => {
       const schema = new Schema('TestSchema', {
-        x: new Type({
-          name: 'Num',
-          instance: Num,
-          validate: is.number,
-        }),
-        y: new Type({
-          name: 'Num',
-          instance: Num,
-          validate: is.number,
-        }),
+        x: Type.Number,
+        y: Type.Number,
       });
 
-      assert.deepEqual(schema.validate({ x: 1, y: 1 }), { x: { value: 1 }, y: { value: 1 } });
+      assert.deepEqual(schema.validate({ x: 1, y: 1 }), {
+        count: 0,
+        map: {
+          x: {
+            count: 0,
+            name: 'Number',
+          },
+          y: {
+            count: 0,
+            name: 'Number',
+          },
+        },
+        name: 'TestSchema',
+      });
     });
 
     it('with incorrect values', () => {
       const schema = new Schema('TestSchema', {
-        x: new Type({
-          name: 'Num',
-          instance: Num,
-          validate: is.number,
-        }),
-        y: new Type({
-          name: 'Num',
-          instance: Num,
-          validate: is.number,
-        }),
+        x: Type.Number,
+        y: Type.Number,
       });
 
-      try {
-        schema.validate({ x: 'str', y: 'str' });
-      } catch (err) {
-        assert.deepEqual(err, {
-          x: testError,
-          y: testError,
-        });
-      }
+      assert.deepEqual(schema.validate({ y: 'str' }), {
+        name: 'TestSchema',
+        count: 1,
+        map: {
+          y: new ValidationError('Number', 'String'),
+        },
+      });
     });
 
     it('with not providing required value', () => {
@@ -196,12 +105,12 @@ describe('Schema', () => {
       try {
         schema.validate({ y: 2 });
       } catch (err) {
-        assert.deepEqual(err, { x: 'Value is not defined' });
+        assert.deepEqual(err, { x: 'Value x required but undefined' });
       }
     });
 
     it('deep schema with incorrect values', () => {
-      const Milestone = new Schema('MessageSchema', {
+      const Milestone = new Schema('MilestoneSchema', {
         id: Type.String,
       });
 
@@ -213,7 +122,7 @@ describe('Schema', () => {
 
       const UserSchema = new Schema('UserSchema', {
         id: Type.String,
-        age: Type.Number,
+        age: Type.String,
         messages: [MessageSchema],
       });
 
@@ -222,46 +131,60 @@ describe('Schema', () => {
         profile: UserSchema,
       });
 
-      try {
-        schema.validate({
-          name: 1,
+      const validationError = schema.validate({
+        name: 1,
+        profile: {
+          id: 1,
+          messages: [
+            {
+              id: 1,
+              history: [
+                { id: 1 },
+              ],
+            }],
+        },
+      });
+
+      assert.deepEqual(validationError, {
+        count: 4,
+        map: {
+          name: new ValidationError('String', 'Number'),
           profile: {
-            id: 1,
-            messages: [
-              {
-                id: 1,
-                history: [
-                  { id: 1 },
+            count: 3,
+            map: {
+              id: new ValidationError('String', 'Number'),
+              messages: {
+                count: 2,
+                list: [
+                  {
+                    count: 2,
+                    map: {
+                      history: {
+                        count: 1,
+                        list: [
+                          {
+                            count: 1,
+                            map: {
+                              id: new ValidationError('String', 'Number'),
+                            },
+                            name: 'MilestoneSchema',
+                          },
+                        ],
+                        name: 'MilestoneSchema',
+                      },
+                      id: new ValidationError('String', 'Number'),
+                    },
+                    name: 'MessageSchema',
+                  },
                 ],
-              }],
-          },
-        });
-      } catch (err) {
-        assert.deepEqual(err, {
-          name: {
-            actual: 'Number',
-            expected: 'String',
-          },
-          profile: {
-            id: {
-              actual: 'Number',
-              expected: 'String',
-            },
-            messages: {
-              history: {
-                id: {
-                  actual: 'Number',
-                  expected: 'String',
-                },
-              },
-              id: {
-                actual: 'Number',
-                expected: 'String',
+                name: 'MessageSchema',
               },
             },
+            name: 'UserSchema',
           },
-        });
-      }
+        },
+        name: 'CellSchema',
+      });
     });
   });
 });

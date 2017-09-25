@@ -17,6 +17,7 @@ const is = {
   type: value => !!value[sym('type')],
   uuid: value => is.sym(value) || is.string(value) || is.number(value),
   object_id: value => is.sym(value) || is.string(value) || is.number(value),
+  error: value => !!value[sym('error')],
 };
 
 export default is;

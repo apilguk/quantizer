@@ -54,10 +54,7 @@ describe('List', () => {
     const handler = chai.spy(() => {});
 
     list.map(handler);
-
-    list.map((n, index) => {
-      assert.deepEqual(n.get(), src[index]);
-    });
+    list.map((n, index) => assert.deepEqual(n.get(), src[index]));
 
     expect(handler).to.have.been.called.exactly(2);
   });
@@ -135,7 +132,7 @@ describe('List', () => {
       const type = new Type({
         name: 'SomeClass',
         instance: SomeClass,
-        validate: value => true,
+        validate: () => true,
       });
       const list = new State.List([], type);
 
@@ -165,6 +162,8 @@ describe('List', () => {
         if (data.type === 'silver') {
           return new State.Map({ color: 'grey' });
         }
+
+        return false;
       });
       const list = new State.List([], factory);
 

@@ -1,5 +1,6 @@
 import TypedNode from '../node';
 import { keyedIterator, getSourceValue } from '../utils';
+import { DefaultError } from '../error';
 import DefaultNodesFactory from './default_factory';
 
 export default class Map extends TypedNode {
@@ -21,7 +22,7 @@ export default class Map extends TypedNode {
     if (!this.schema) {
       this.attributes[key] = DefaultNodesFactory.get(value);
     } else {
-      this.attributes[key] = this.schema.validateField(key, value);
+      this.attributes[key] = this.schema.serializeField(key, value);
     }
 
     if (this.keys.indexOf(key) === -1) {
@@ -32,11 +33,7 @@ export default class Map extends TypedNode {
   }
 
   getAttribute(key) {
-    if (this.attributes[key] !== undefined) {
-      return this.attributes[key].get();
-    }
-
-    return undefined;
+    return getSourceValue(this.attributes[key]);
   }
 
   set(source) {
@@ -55,16 +52,21 @@ export default class Map extends TypedNode {
   merge(source) {
     const sourceValue = getSourceValue(source);
 
+    if (this.schema) {
+      const validationErr = this.schema.validate(source);
+
+      if (validationErr._count_ > 0) {
+        throw DefaultError.formatError(validationErr);
+      }
+    }
+
     if (!this.schema) {
       for (const name in sourceValue) {
         this.setAttribute(name, sourceValue[name]);
       }
-
-      return;
+    } else {
+      this.attributes = Object.assign(this.attributes, this.schema.serialize(source));
     }
-
-    const newAttributes = this.schema.validate(source);
-    this.attributes = Object.assign(this.attributes, newAttributes);
   }
 
   get(...args) {
@@ -102,7 +104,7 @@ export default class Map extends TypedNode {
   }
 
   clone() {
-    return new Map(this.get());
+    return new Map(this.get(), this.schema);
   }
 
   toJSON() {

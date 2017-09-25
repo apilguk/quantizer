@@ -1,6 +1,7 @@
 import * as State from './state';
 import is from './is';
 import { sym } from './utils';
+import { ValidationError } from './error';
 
 export default class Type {
   constructor({ name, validate, instance, required, of, defaultValue }) {
@@ -13,6 +14,48 @@ export default class Type {
     this.defaultValue = defaultValue;
     this.of = of;
 
+    if (of) {
+      this.validate = (value) => {
+        let errors = {
+          name: this.name,
+          count: 0,
+          list: [],
+        };
+
+        if (!validate(value)) {
+          errors = new ValidationError('List', Type.defineType(value));
+
+          return errors;
+        }
+
+        for (let i = 0; i < value.length; i += 1) {
+          const validationError = of.validate(value[i]);
+
+          if (validationError.count > 0) {
+            errors.list.push(validationError);
+            errors.count += validationError.count;
+          }
+        }
+
+        return errors;
+      };
+    } else {
+      this.validate = (value) => {
+        let errors = {
+          name: this.name,
+          count: 0,
+        };
+
+        if (!validate(value)) {
+          errors = new ValidationError(this.name, Type.defineType(value));
+
+          return errors;
+        }
+
+        return errors;
+      };
+    }
+
     if (!required) {
       this.isRequired = new Type({ ...this, required: true });
     }
@@ -23,19 +66,7 @@ export default class Type {
   parse(value) {
     const TypeInstace = this.instance;
 
-    this.checkValidation(value);
-
     return new TypeInstace(value, this.of);
-  }
-
-  checkValidation(value) {
-    if (!this.validate(value)) {
-      throw {
-        actual: Type.defineType(value),
-        expected: this.name,
-      };
-    }
-    return true;
   }
 
   getDefaultValue() {
