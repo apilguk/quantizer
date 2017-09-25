@@ -1,5 +1,4 @@
 import { sym } from './utils';
-import is from './is';
 
 function tab(depth) {
   return '  '.repeat(depth);
