@@ -3,7 +3,7 @@ import DefaultNodesFactory from './state/default_factory';
 import Type from './type';
 import { Map, List } from './state';
 import { sym } from './utils';
-import { ValidationError, RequirementError, UndeclaredError } from './error';
+import { ValidationError, RequirementError, UndeclaredError, DefaultError } from './error';
 
 export default class Schema {
   constructor(name = 'Unnamed', fileds, strict = false) {
@@ -25,49 +25,53 @@ export default class Schema {
   initTypes(types) {
     for (const key in types) {
       const input = types[key];
-      const type = Type.defineType(input);
+      // const type = Type.defineType(input);
 
-      if (type === 'Type' || type === 'Schema') {
+      if (is.type(input) || is.schema(input)) {
         this.fields[key] = input;
-      } else if (type === 'Map') {
+      } else if (is.map(input)) {
+        const schema = new Schema(key, input);
+
         this.fields[key] = new Type({
           name: key,
           instance: Map,
-          validate: is.map,
-          of: new Schema(key, input),
+          validate: schema.validate.bind(schema),
+          of: schema,
         });
-      } else if (type === 'List') {
-        const innerType = Type.defineType(input[0]);
-        let innerSchema = new Schema(key, input[0]);
+      } else if (is.list(input)) {
+        const instance = input[0];
 
-        if (
-          innerType === 'Schema' ||
-          innerType === 'Type' ||
-          is.node(input[0])
-        ) {
-          innerSchema = input[0];
+        if (is.schema(instance) || is.type(instance)) {
+          this.fields[key] = new Type({
+            name: instance.name,
+            instance: List,
+            validate: instance.validate,
+            of: instance,
+          });
         }
 
-        this.fields[key] = new Type({
-          name: innerSchema.name,
-          instance: List,
-          validate: is.list,
-          of: innerSchema,
-        });
+        if (is.node(instance) && instance.schema && is.schema(instance.schema)) {
+          this.fields[key] = new Type({
+            name: instance.name,
+            instance: List,
+            validate: instance.schema.validate.bind(instance.schema),
+            of: instance,
+          });
+        }
+
+      } else {
+        // console.log(is.schema(input), input)
+
       }
     }
   }
 
   getDefault(key) {
-    try {
-      if (this.fields[key]) {
-        return this.fields[key].getDefaultValue();
-      }
-
-      return new Error(`Undefined value - ${key}`);
-    } catch (err) {
-      throw err;
+    if (this.fields[key]) {
+      return this.fields[key].getDefaultValue();
     }
+
+    return new DefaultError(key);
   }
 
   validate(obj) {
@@ -96,8 +100,10 @@ export default class Schema {
 
         const validationError = field.validate(obj[key]);
 
-        errors.map[key] = validationError;
-        errors.count += validationError.count;
+        if (validationError.count > 0) {
+          errors.map[key] = validationError;
+          errors.count += validationError.count;
+        }
       }
 
       if (this.strict && typeof field === 'undefined') {
@@ -155,5 +161,9 @@ export default class Schema {
 
   find(key) {
     return this.attributes[key];
+  }
+
+  static BindSchema(node, schema) {
+    node.validate = schema.validate.bind(schema);
   }
 }

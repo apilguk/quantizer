@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 import { is, Schema, Type } from '../src';
-import { ValidationError } from '../src/error';
+import { ValidationError, RequirementError } from '../src/error';
 
 const Num = value => ({ value });
 
@@ -17,7 +17,7 @@ describe('Schema', () => {
   });
 
   describe('validation', () => {
-    it('field with correct values', () => {
+    it('one correct value', () => {
       const schema = new Schema('TestSchema', {
         x: Type.Number,
         y: Type.Number,
@@ -26,16 +26,39 @@ describe('Schema', () => {
       assert.deepEqual(schema.validate({ x: 1 }), {
         name: 'TestSchema',
         count: 0,
+        map: {},
+      });
+    });
+
+    it('one incorrect values', () => {
+      const schema = new Schema('TestSchema', {
+        x: Type.Number,
+        y: Type.Number,
+      });
+
+      assert.deepEqual(schema.validate({ y: 'str' }), {
+        name: 'TestSchema',
+        count: 1,
         map: {
-          x: {
-            count: 0,
-            name: 'Number',
-          },
+          y: new ValidationError('Number', 'String'),
         },
       });
     });
 
-    it('field with incorrect values', () => {
+    it('couple correct values', () => {
+      const schema = new Schema('TestSchema', {
+        x: Type.Number,
+        y: Type.Number,
+      });
+
+      assert.deepEqual(schema.validate({ x: 1, y: 1 }), {
+        count: 0,
+        map: {},
+        name: 'TestSchema',
+      });
+    });
+
+    it('couple incorrect value', () => {
       const schema = new Schema('TestSchema', {
         x: Type.Number,
         y: Type.Number,
@@ -51,62 +74,25 @@ describe('Schema', () => {
       });
     });
 
-    it('with correct values', () => {
+    it('without requred field', () => {
       const schema = new Schema('TestSchema', {
-        x: Type.Number,
+        x: Type.Number.isRequired,
         y: Type.Number,
       });
 
-      assert.deepEqual(schema.validate({ x: 1, y: 1 }), {
-        count: 0,
-        map: {
-          x: {
-            count: 0,
-            name: 'Number',
-          },
-          y: {
-            count: 0,
-            name: 'Number',
-          },
-        },
-        name: 'TestSchema',
-      });
-    });
+      const err = schema.validate({ y: 2 });
 
-    it('with incorrect values', () => {
-      const schema = new Schema('TestSchema', {
-        x: Type.Number,
-        y: Type.Number,
-      });
-
-      assert.deepEqual(schema.validate({ y: 'str' }), {
+      assert.deepEqual(err, {
         name: 'TestSchema',
         count: 1,
         map: {
-          y: new ValidationError('Number', 'String'),
+          x: new RequirementError('x'),
         },
       });
     });
 
-    it('with not providing required value', () => {
-      const schema = new Schema('TestSchema', {
-        x: new Type({
-          name: 'Num',
-          instance: e => ({ value: e }),
-          validate: () => true,
-          required: true,
-        }),
-        y: new Type({
-          name: 'Num',
-          instance: Num,
-          validate: is.number,
-        }),
-      });
-      try {
-        schema.validate({ y: 2 });
-      } catch (err) {
-        assert.deepEqual(err, { x: 'Value x required but undefined' });
-      }
+    it('factory from instance', () => {
+
     });
 
     it('deep schema with incorrect values', () => {

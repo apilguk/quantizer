@@ -58,7 +58,14 @@ export default class List extends TypedNode {
     this.clear();
     const sourceValue = getSourceValue(source);
 
+
+
+    // if (this.of) {
+    // }
+
     for (let i = 0; i < sourceValue.length; i += 1) {
+      // console.log(this.of.validate)
+
       this.push(sourceValue[i]);
     }
 
@@ -112,6 +119,10 @@ export default class List extends TypedNode {
   at(index) {
     if (index === 'last') {
       return this.children[this.length - 1];
+    }
+
+    if (index === 'first') {
+      return this.children[0];
     }
 
     return this.children[index];

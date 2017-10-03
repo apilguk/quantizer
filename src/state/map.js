@@ -33,7 +33,11 @@ export default class Map extends TypedNode {
   }
 
   getAttribute(key) {
-    return getSourceValue(this.attributes[key]);
+    if (this.attributes[key] !== undefined) {
+      return this.attributes[key].get();
+    }
+
+    return undefined;
   }
 
   set(source) {
@@ -55,8 +59,9 @@ export default class Map extends TypedNode {
     if (this.schema) {
       const validationErr = this.schema.validate(source);
 
-      if (validationErr._count_ > 0) {
-        throw DefaultError.formatError(validationErr);
+      if (validationErr.count > 0) {
+        // throw DefaultError.formatError(validationErr);
+        throw validationErr;
       }
     }
 

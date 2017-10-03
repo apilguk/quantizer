@@ -3,12 +3,13 @@ import * as State from '../src/state';
 import TypedNode from '../src/node';
 import Schema from '../src/schema';
 import is from '../src/is';
-import { ValidationError, RequirementError } from '../src/error';
+import { ValidationError, RequirementError, DefaultError } from '../src/error';
 import Quantiser from '../src';
 
 window.Quantiser = Quantiser;
 window.ValidationError = ValidationError;
 window.RequirementError = RequirementError;
+window.DefaultError = DefaultError;
 window.TypedNode = TypedNode;
 window.Type = Type;
 window.State = State;
@@ -37,4 +38,22 @@ window.schema = new Schema('CellSchema', {
 });
 
 
-window.cell = new State.Map({}, window.schema);
+class CellInst extends State.Map {
+  static schema = window.schema;
+
+  constructor() {
+    super({ list: [] }, window.schema);
+
+    // cellInst.validate = window.schema.validate.bind(window.schema)
+  }
+};
+
+const cell = new CellInst({});
+
+// console.log(cell)
+
+const listFromModel = new Schema('ListOf', {
+  list: [CellInst],
+});
+
+window.listFromModel = listFromModel;

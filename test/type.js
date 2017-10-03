@@ -1,11 +1,8 @@
 import { assert } from 'chai';
 import { is, Type } from '../src';
+import { ValidationError } from '../src/error';
 
 const PrimitiveNode = value => ({ value });
-const testError = {
-  actual: 'String',
-  expected: 'TestType',
-};
 
 describe('Type', () => {
   it('constructor', () => {
@@ -26,7 +23,7 @@ describe('Type', () => {
     assert.isDefined(createdType.of);
   });
 
-  it('parsing with correct type', () => {
+  it('serialization', () => {
     const createdType = new Type({
       name: 'TestType',
       instance: PrimitiveNode,
@@ -34,11 +31,10 @@ describe('Type', () => {
       defaultValue: 0,
     });
 
-    createdType.parse(1);
-    assert.deepEqual(createdType.parse(1), { value: 1 });
+    assert.deepEqual(createdType.parse(4), { value: 4 });
   });
 
-  it('parsing with incorrect type', () => {
+  it('validation', () => {
     const createdType = new Type({
       name: 'TestType',
       instance: PrimitiveNode,
@@ -46,14 +42,12 @@ describe('Type', () => {
       defaultValue: 0,
     });
 
-    try {
-      createdType.parse('str');
-    } catch (err) {
-      assert.deepEqual(err, testError);
-    }
+    const err = createdType.validate('str');
+
+    assert.deepEqual(err, new ValidationError('TestType', 'String'));
   });
 
-  it('get default value with correct type', () => {
+  it('default value', () => {
     const createdType = new Type({
       name: 'TestType',
       instance: PrimitiveNode,
@@ -64,7 +58,8 @@ describe('Type', () => {
     assert.deepEqual(createdType.getDefaultValue(), { value: 5 });
   });
 
-  it('get default value with incorrect type', () => {
+
+  it('validation of the default value', () => {
     const createdType = new Type({
       name: 'TestType',
       instance: PrimitiveNode,
@@ -72,10 +67,8 @@ describe('Type', () => {
       defaultValue: 'str',
     });
 
-    try {
-      createdType.getDefaultValue();
-    } catch (err) {
-      assert.deepEqual(err, testError);
-    }
+    const err = createdType.getDefaultValue();
+
+    assert.deepEqual(err, new ValidationError('TestType', 'String'));
   });
 });

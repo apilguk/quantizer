@@ -1,7 +1,7 @@
 import * as State from './state';
 import is from './is';
 import { sym } from './utils';
-import { ValidationError } from './error';
+import { ValidationError, DefaultError } from './error';
 
 export default class Type {
   constructor({ name, validate, instance, required, of, defaultValue }) {
@@ -71,11 +71,17 @@ export default class Type {
 
   getDefaultValue() {
     if (typeof this.defaultValue !== 'undefined') {
+      const err = this.validate(this.defaultValue);
+
+      if (err.count > 0) {
+        return new ValidationError(this.name, Type.defineType(this.defaultValue));
+      }
+
       return this.parse(this.defaultValue);
     }
 
     if (this.required) {
-      throw `${this.name}: Default value is not defined.`;
+      return new DefaultError(`${this.name}: Default value is not defined.`);
     }
 
     return null;
@@ -110,7 +116,6 @@ export default class Type {
     }
   }
 }
-
 
 Type.Any = new Type({
   name: 'Any',

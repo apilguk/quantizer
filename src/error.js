@@ -58,38 +58,26 @@ export class DefaultError {
 
 export class ValidationError extends DefaultError {
   constructor(expected, actual, key = false) {
-    super();
+    super(`Expected ${expected} but ${actual}\n`);
 
     this.expected = expected;
     this.actual = actual;
     this.key = key;
   }
-
-  formatMessage() {
-    return `Expected ${this.expected} but ${this.actual}\n`;
-  }
 }
 
 export class RequirementError extends DefaultError {
   constructor(keyName) {
-    super();
+    super(`Value ${keyName} required but undefined\n`);
 
     this.keyName = keyName;
-  }
-
-  formatMessage() {
-    return `Value ${this.keyName} required but undefined\n`;
   }
 }
 
 export class UndeclaredError extends DefaultError {
   constructor(keyName) {
-    super();
+    super(`Field ${keyName} undeclared at Schema]\n`);
 
     this.keyName = keyName;
-  }
-
-  formatMessage() {
-    return `Field ${this.keyName} undeclared at Schema]\n`;
   }
 }
