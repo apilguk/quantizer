@@ -1,6 +1,6 @@
 import chai, { expect, assert } from 'chai';
 import spiesPlugin from 'chai-spies';
-import { State, Type, Utils } from '../../src';
+import { State, Type, Factory } from '../../src';
 
 chai.use(spiesPlugin);
 
@@ -54,10 +54,7 @@ describe('List', () => {
     const handler = chai.spy(() => {});
 
     list.map(handler);
-
-    list.map((n, index) => {
-      assert.deepEqual(n.get(), src[index]);
-    });
+    list.map((n, index) => assert.deepEqual(n.get(), src[index]));
 
     expect(handler).to.have.been.called.exactly(2);
   });
@@ -135,7 +132,7 @@ describe('List', () => {
       const type = new Type({
         name: 'SomeClass',
         instance: SomeClass,
-        validate: value => true,
+        validate: () => true,
       });
       const list = new State.List([], type);
 
@@ -153,18 +150,22 @@ describe('List', () => {
       list.push({});
       list.push({});
 
+      console.log()
+
       assert.instanceOf(list.at(0), SomeClass);
       assert.instanceOf(list.at(1), SomeClass);
     });
 
     it('from factory', () => {
-      const factory = Utils.factoryCreator((data) => {
+      const factory = new Factory((data) => {
         if (data.type === 'gold') {
           return new State.Map({ color: 'yellow' });
         }
         if (data.type === 'silver') {
           return new State.Map({ color: 'grey' });
         }
+
+        return false;
       });
       const list = new State.List([], factory);
 

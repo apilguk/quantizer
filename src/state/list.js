@@ -1,30 +1,47 @@
 import TypedNode from '../node';
+import DefaultNodesFactory from './default_factory';
 import { indexedIterator, getSourceValue } from '../utils';
 import is from '../is';
-import DefaultNodesFactory from './default_factory';
 
 export default class List extends TypedNode {
-  constructor(value, of) {
+  constructor(value, schema = false) {
     super();
 
     this.children = [];
+    this.schema = schema;
 
-    if (of) {
-      if (!is.factory(of)) {
-        if (!is.type(of) && !is.schema(of)) {
-          const Instance = of;
+    if (this.constructor.schema) {
+      this.schema = this.constructor.schema;
+    }
 
-          this.type = {
+    if (this.schema) {
+      if (is.node(this.schema)) {
+        const Instance = this.schema;
+
+        if (Instance.schema) {
+          this.nested = {
             parse: (...args) => new Instance(...args),
+            validate: Instance.schema.validate.bind(Instance.schema),
           };
         } else {
-          this.type = of;
+          this.nested = {
+            parse: (...args) => new Instance(...args),
+            validate: () => ({ count: 0 }),
+          };
         }
-      } else {
-        this.factory = of;
+      } else if (is.schema(this.schema) || is.type(this.schema)) {
+        this.nested = this.schema;
+      } else if (is.factory(this.schema)) {
+        this.nested = {
+          parse: (...args) => this.schema.get(...args),
+          validate: () => ({ count: 0 }),
+        };
       }
     } else {
-      this.factory = DefaultNodesFactory;
+      this.nested = {
+        parse: (...args) => DefaultNodesFactory.get(...args),
+        validate: () => ({ count: 0 }),
+      };
     }
 
     if (typeof value !== 'undefined') {
@@ -68,20 +85,12 @@ export default class List extends TypedNode {
   push(value) {
     const sourceValue = getSourceValue(value);
 
-    // console.log(this.type)
+    const validationErr = this.nested.validate(sourceValue);
 
-    if (this.type) {
-      try {
-        this.children.push(
-          this
-            .type
-            .parse(sourceValue),
-        );
-      } catch (err) {
-        throw err;
-      }
+    if (validationErr.count > 0) {
+      throw validationErr;
     } else {
-      this.children.push(this.factory.get(sourceValue));
+      this.children.push(this.nested.parse(sourceValue));
     }
 
     return this;
@@ -112,6 +121,10 @@ export default class List extends TypedNode {
   at(index) {
     if (index === 'last') {
       return this.children[this.length - 1];
+    }
+
+    if (index === 'first') {
+      return this.children[0];
     }
 
     return this.children[index];

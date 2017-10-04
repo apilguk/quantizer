@@ -52,36 +52,25 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(15);
+	module.exports = __webpack_require__(14);
 
 
-/***/ },
+/***/ }),
 /* 1 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.factoryCreator = factoryCreator;
 	exports.sym = sym;
 	exports.keyedIterator = keyedIterator;
 	exports.indexedIterator = indexedIterator;
 	exports.getSourceValue = getSourceValue;
-
-	var _factory = __webpack_require__(7);
-
-	var _factory2 = _interopRequireDefault(_factory);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function factoryCreator(fn) {
-	  return new _factory2.default(fn);
-	}
-
+	exports.uuid = uuid;
 	function sym(name) {
 	  return '[[' + name + ']]';
 	}
@@ -93,9 +82,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  return {
 	    next: function next() {
+	      var done = (index += 1) >= _this.keys.length;
 	      return {
 	        value: _this.find(_this.keys[index]),
-	        done: (index += 1) >= _this.keys.length
+	        done: done
 	      };
 	    }
 	  };
@@ -108,9 +98,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  return {
 	    next: function next() {
+	      var value = _this2.at(index);
+	      var done = (index += 1) > _this2.length;
 	      return {
-	        value: _this2.at(index),
-	        done: (index += 1) >= _this2.length
+	        value: value,
+	        done: done
 	      };
 	    }
 	  };
@@ -124,9 +116,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return source;
 	}
 
-/***/ },
+	function uuid() {
+	  var dt = new Date().getTime();
+	  var value = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+	    var r = (dt + Math.random() * 16) % 16 | 0;
+	    dt = Math.floor(dt / 16);
+	    return (c === 'x' ? r : r && 0x3 || 0x8).toString(16);
+	  });
+	  return value;
+	}
+
+/***/ }),
 /* 2 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -167,9 +169,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	TypedNode[(0, _utils.sym)('node')] = true;
 
-/***/ },
+/***/ }),
 /* 3 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -186,57 +188,60 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return value === null;
 	  },
 	  _undefined: function _undefined(value) {
-	    return value === undefined;
+	    return typeof value === 'undefined';
 	  },
 	  func: function func(value) {
-	    return typeof value === 'function';
+	    return typeof value !== 'undefined' && typeof value === 'function';
 	  },
 	  promise: function promise(value) {
-	    return value && typeof value.then === 'function';
+	    return typeof value !== 'undefined' && typeof value.then === 'function';
 	  },
 	  list: function list(value) {
-	    return Array.isArray(value);
+	    return typeof value !== 'undefined' && Array.isArray(value);
 	  },
 	  number: function number(value) {
-	    return typeof value === 'number';
+	    return typeof value !== 'undefined' && typeof value === 'number';
 	  },
 	  boolean: function boolean(value) {
-	    return typeof value === 'boolean';
+	    return typeof value !== 'undefined' && typeof value === 'boolean';
 	  },
 	  string: function string(value) {
-	    return typeof value === 'string';
+	    return typeof value !== 'undefined' && typeof value === 'string';
 	  },
 	  map: function map(value) {
-	    return !(value === null) && !Array.isArray(value) && (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object';
+	    return typeof value !== 'undefined' && !(value === null) && !Array.isArray(value) && (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object';
 	  },
 	  factory: function factory(value) {
-	    return value[(0, _utils.sym)('factory')];
+	    return typeof value !== 'undefined' && value[(0, _utils.sym)('factory')];
 	  },
 	  node: function node(value) {
-	    return !!value[(0, _utils.sym)('node')];
+	    return typeof value !== 'undefined' && !!value[(0, _utils.sym)('node')];
 	  },
 	  schema: function schema(value) {
-	    return !!value[(0, _utils.sym)('schema')];
+	    return typeof value !== 'undefined' && !!value[(0, _utils.sym)('schema')];
 	  },
 	  sym: function sym(value) {
-	    return is.string(value) && /\[\[(\w+)\]\]/g.test(value);
+	    return typeof value !== 'undefined' && is.string(value) && /\[\[(\w+)\]\]/g.test(value);
 	  }, /* eslint no-useless-escape: 1 */
 	  type: function type(value) {
-	    return !!value[(0, _utils.sym)('type')];
+	    return typeof value !== 'undefined' && !!value[(0, _utils.sym)('type')];
 	  },
 	  uuid: function uuid(value) {
-	    return is.sym(value) || is.string(value) || is.number(value);
-	  },
+	    return typeof value !== 'undefined' && is.string(value);
+	  }, // needs a true validation
 	  object_id: function object_id(value) {
-	    return is.sym(value) || is.string(value) || is.number(value);
+	    return typeof value !== 'undefined' && is.string(value);
+	  }, // needs a true validation
+	  error: function error(value) {
+	    return typeof value !== 'undefined' && !!value[(0, _utils.sym)('error')];
 	  }
 	};
 
 	exports.default = is;
 
-/***/ },
+/***/ }),
 /* 4 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -244,7 +249,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 
-	var _utils = __webpack_require__(1);
+	var _factory = __webpack_require__(8);
+
+	var _factory2 = _interopRequireDefault(_factory);
 
 	var _type = __webpack_require__(5);
 
@@ -254,29 +261,29 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _node2 = _interopRequireDefault(_node);
 
-	var _boolean = __webpack_require__(8);
+	var _boolean = __webpack_require__(9);
 
 	var _boolean2 = _interopRequireDefault(_boolean);
 
-	var _number = __webpack_require__(11);
+	var _number = __webpack_require__(12);
 
 	var _number2 = _interopRequireDefault(_number);
 
-	var _string = __webpack_require__(12);
+	var _string = __webpack_require__(13);
 
 	var _string2 = _interopRequireDefault(_string);
 
-	var _list = __webpack_require__(9);
+	var _list = __webpack_require__(10);
 
 	var _list2 = _interopRequireDefault(_list);
 
-	var _map = __webpack_require__(10);
+	var _map = __webpack_require__(11);
 
 	var _map2 = _interopRequireDefault(_map);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	exports.default = (0, _utils.factoryCreator)(function (value) {
+	exports.default = new _factory2.default(function (value) {
 	  if (value instanceof _node2.default) {
 	    return value;
 	  }
@@ -297,9 +304,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	});
 
-/***/ },
+/***/ }),
 /* 5 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -307,11 +314,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _state = __webpack_require__(6);
-
-	var State = _interopRequireWildcard(_state);
 
 	var _is = __webpack_require__(3);
 
@@ -319,24 +324,100 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _utils = __webpack_require__(1);
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	var _error = __webpack_require__(7);
 
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+	/**
+	 * Type.
+	 */
+
 	var Type = function () {
-	  function Type(opts) {
+	  /**
+	   * @param {{
+	   *   name: {number} - name of the type validator, will be used for formating errors.
+	   *   validate: {function} - validator function takes a value to validate and return
+	   *     boolean verdict.
+	   *   instance: {Node} - instance of the Quantizer node wich will be used for serialization.
+	   *   required: {boolean} - is value need to be required or no.
+	   *   nested: {Type|Schema|Node} - nested type of the node, currently supported by List.
+	   * }} - params of the type.
+	   *
+	   * @returns {Type}
+	   */
+	  function Type(_ref) {
+	    var _this = this;
+
+	    var name = _ref.name,
+	        validate = _ref.validate,
+	        instance = _ref.instance,
+	        required = _ref.required,
+	        nested = _ref.nested;
+
 	    _classCallCheck(this, Type);
 
 	    this[(0, _utils.sym)('type')] = true;
 
-	    this.name = opts.name;
-	    this.validate = opts.validate;
-	    this.instance = opts.instance;
-	    this.required = opts.required;
-	    this.defaultValue = opts.defaultValue;
-	    this.of = opts.of;
+	    this.name = name;
+	    this.validate = validate;
+	    this.instance = instance;
+	    this.required = required;
+	    this.nested = nested;
+
+	    if (nested) {
+	      this.validate = function (value) {
+	        var errors = {
+	          name: _this.name,
+	          count: 0,
+	          list: []
+	        };
+
+	        if (!validate(value)) {
+	          return new _error.ValidationError('List', Type.defineType(value));
+	        }
+
+	        for (var i = 0; i < value.length; i += 1) {
+	          if (_is2.default.node(nested)) {
+	            var validationError = nested.schema.validate(value[i]);
+
+	            if (validationError.count > 0) {
+	              errors.list.push(validationError);
+	              errors.count += validationError.count;
+	            }
+	          } else {
+	            var _validationError = nested.validate(value[i]);
+
+	            if (_validationError.count > 0) {
+	              errors.list.push(_validationError);
+	              errors.count += _validationError.count;
+	            }
+	          }
+	        }
+
+	        return errors;
+	      };
+	    } else {
+	      this.validate = function (value) {
+	        var errors = {
+	          name: _this.name,
+	          count: 0
+	        };
+
+	        if (!validate(value)) {
+	          errors = new _error.ValidationError(_this.name, Type.defineType(value));
+
+	          return errors;
+	        }
+
+	        return errors;
+	      };
+	    }
+
+	    if (!required) {
+	      this.isRequired = new Type(_extends({}, this, { required: true }));
+	    }
 
 	    return this;
 	  }
@@ -346,27 +427,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function parse(value) {
 	      var TypeInstace = this.instance;
 
-	      if (!this.validate(value)) {
-	        throw {
-	          actual: Type.defineType(value),
-	          expected: this.name
-	        };
-	      }
-
-	      return new TypeInstace(value, this.of);
-	    }
-	  }, {
-	    key: 'getDefaultValue',
-	    value: function getDefaultValue() {
-	      if (typeof this.defaultValue !== 'undefined') {
-	        return this.parse(this.defaultValue);
-	      }
-
-	      if (this.required) {
-	        throw this.name + ': Default value is not defined.';
-	      }
-
-	      return null;
+	      return new TypeInstace(value, this.nested);
 	    }
 	  }], [{
 	    key: 'defineType',
@@ -390,7 +451,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          return 'Boolean';
 	        case _is2.default.map(value):
 	          return 'Map';
-	        case typeof value === 'function':
+	        case _is2.default.func(value):
 	          return 'Function';
 	        case _is2.default.node(value):
 	          return 'TypedNode';
@@ -405,60 +466,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.default = Type;
 
-
-	Type.Any = new Type({
-	  name: 'Any',
-	  instance: State.Any,
-	  validate: function validate() {
-	    return true;
-	  }
-	});
-
-	Type.Boolean = new Type({
-	  name: 'Boolean',
-	  instance: State.Boolean,
-	  validate: _is2.default.boolean
-	});
-
-	Type.List = new Type({
-	  name: 'List',
-	  instance: State.List,
-	  validate: _is2.default.list
-	});
-
-	Type.Map = new Type({
-	  name: 'Map',
-	  instance: State.Map,
-	  validate: _is2.default.map
-	});
-
-	Type.Number = new Type({
-	  name: 'Number',
-	  instance: State.Number,
-	  validate: _is2.default.number
-	});
-
-	Type.String = new Type({
-	  name: 'String',
-	  instance: State.String,
-	  validate: _is2.default.string
-	});
-
-	Type.UUID = new Type({
-	  name: 'UUID',
-	  instance: State.UUID,
-	  validate: _is2.default.uuid
-	});
-
-	Type.ObjectID = new Type({
-	  name: 'ObjectID',
-	  instance: State.ObjectID,
-	  validate: _is2.default.object_id
-	});
-
-/***/ },
+/***/ }),
 /* 6 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -467,35 +477,35 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.UUID = exports.ObjectID = exports.List = exports.Map = exports.String = exports.Number = exports.Boolean = exports.Any = undefined;
 
-	var _any = __webpack_require__(17);
+	var _any = __webpack_require__(16);
 
 	var _any2 = _interopRequireDefault(_any);
 
-	var _boolean = __webpack_require__(8);
+	var _boolean = __webpack_require__(9);
 
 	var _boolean2 = _interopRequireDefault(_boolean);
 
-	var _number = __webpack_require__(11);
+	var _number = __webpack_require__(12);
 
 	var _number2 = _interopRequireDefault(_number);
 
-	var _string = __webpack_require__(12);
+	var _string = __webpack_require__(13);
 
 	var _string2 = _interopRequireDefault(_string);
 
-	var _list = __webpack_require__(9);
+	var _list = __webpack_require__(10);
 
 	var _list2 = _interopRequireDefault(_list);
 
-	var _map = __webpack_require__(10);
+	var _map = __webpack_require__(11);
 
 	var _map2 = _interopRequireDefault(_map);
 
-	var _object_id = __webpack_require__(18);
+	var _object_id = __webpack_require__(17);
 
 	var _object_id2 = _interopRequireDefault(_object_id);
 
-	var _uuid = __webpack_require__(19);
+	var _uuid = __webpack_require__(18);
 
 	var _uuid2 = _interopRequireDefault(_uuid);
 
@@ -510,9 +520,148 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.ObjectID = _object_id2.default;
 	exports.UUID = _uuid2.default;
 
-/***/ },
+/***/ }),
 /* 7 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.UndeclaredError = exports.RequirementError = exports.ValidationError = exports.DefaultError = undefined;
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _utils = __webpack_require__(1);
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function tab(depth) {
+	  return '  '.repeat(depth);
+	}
+
+	var DefaultError = exports.DefaultError = function () {
+	  function DefaultError(message) {
+	    _classCallCheck(this, DefaultError);
+
+	    this[(0, _utils.sym)('error')] = true;
+	    this.count = 1;
+	    this.message = message;
+	  }
+
+	  _createClass(DefaultError, [{
+	    key: 'formatMessage',
+	    value: function formatMessage() {
+	      return this.message;
+	    }
+	  }], [{
+	    key: 'FormatError',
+	    value: function FormatError(err) {
+	      function formatErrorPart(obj, depth, padBrackets) {
+	        if (depth === 0 && (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) === 'object') {
+	          return '\n' + obj.name + ' ' + formatErrorPart(obj, 1);
+	        }
+
+	        if (obj instanceof DefaultError) {
+	          return '\'' + obj.formatMessage().slice(0, -1) + '\'\n';
+	        }
+
+	        if ((typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) === 'object' && obj.list) {
+	          return '[\n' + obj.list.map(function (o) {
+	            return formatErrorPart(o, depth + 1, true);
+	          }).join('') + tab(depth - 1) + ']\n';
+	        }
+
+	        if ((typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) === 'object' && obj.map) {
+	          var children = obj.map;
+	          var padLeft = tab(padBrackets ? depth - 1 : 0);
+
+	          return padLeft + '{\n' + Object.keys(children).filter(function (key) {
+	            if (key === 'name' && typeof children[key] === 'string') {
+	              return false;
+	            }
+	            if (key === 'count') {
+	              return false;
+	            }
+	            return true;
+	          }).map(function (key) {
+	            return '' + tab(depth) + key + ': ' + formatErrorPart(children[key], depth + 1);
+	          }).join('') + tab(depth - 1) + '}\n';
+	        }
+
+	        return '';
+	      }
+	      return formatErrorPart(err, 0);
+	    }
+	  }, {
+	    key: 'Throw',
+	    value: function Throw(err) {
+	      throw new Error(DefaultError.FormatError(err));
+	    }
+	  }]);
+
+	  return DefaultError;
+	}();
+
+	var ValidationError = exports.ValidationError = function (_DefaultError) {
+	  _inherits(ValidationError, _DefaultError);
+
+	  function ValidationError(expected, actual) {
+	    var key = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
+	    _classCallCheck(this, ValidationError);
+
+	    var _this = _possibleConstructorReturn(this, (ValidationError.__proto__ || Object.getPrototypeOf(ValidationError)).call(this, 'Expected ' + expected + ' but ' + actual + '\n'));
+
+	    _this.expected = expected;
+	    _this.actual = actual;
+	    _this.key = key;
+	    return _this;
+	  }
+
+	  return ValidationError;
+	}(DefaultError);
+
+	var RequirementError = exports.RequirementError = function (_DefaultError2) {
+	  _inherits(RequirementError, _DefaultError2);
+
+	  function RequirementError(keyName) {
+	    _classCallCheck(this, RequirementError);
+
+	    var _this2 = _possibleConstructorReturn(this, (RequirementError.__proto__ || Object.getPrototypeOf(RequirementError)).call(this, 'Value ' + keyName + ' required but undefined\n'));
+
+	    _this2.keyName = keyName;
+	    return _this2;
+	  }
+
+	  return RequirementError;
+	}(DefaultError);
+
+	var UndeclaredError = exports.UndeclaredError = function (_DefaultError3) {
+	  _inherits(UndeclaredError, _DefaultError3);
+
+	  function UndeclaredError(keyName) {
+	    _classCallCheck(this, UndeclaredError);
+
+	    var _this3 = _possibleConstructorReturn(this, (UndeclaredError.__proto__ || Object.getPrototypeOf(UndeclaredError)).call(this, 'Field ' + keyName + ' undeclared at Schema]\n'));
+
+	    _this3.keyName = keyName;
+	    return _this3;
+	  }
+
+	  return UndeclaredError;
+	}(DefaultError);
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -526,30 +675,30 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var FactoryFunction = function () {
-	  function FactoryFunction(factory) {
-	    _classCallCheck(this, FactoryFunction);
+	var Factory = function () {
+	  function Factory(factory) {
+	    _classCallCheck(this, Factory);
 
 	    this[(0, _utils.sym)('factory')] = true;
 
 	    this.func = factory.bind(null);
 	  }
 
-	  _createClass(FactoryFunction, [{
+	  _createClass(Factory, [{
 	    key: 'get',
 	    value: function get() {
 	      return this.func.apply(this, arguments);
 	    }
 	  }]);
 
-	  return FactoryFunction;
+	  return Factory;
 	}();
 
-	exports.default = FactoryFunction;
+	exports.default = Factory;
 
-/***/ },
-/* 8 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -597,9 +746,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.default = Boolean;
 
-/***/ },
-/* 9 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -615,19 +764,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _node2 = _interopRequireDefault(_node);
 
-	var _type = __webpack_require__(5);
+	var _default_factory = __webpack_require__(4);
 
-	var _type2 = _interopRequireDefault(_type);
+	var _default_factory2 = _interopRequireDefault(_default_factory);
 
 	var _utils = __webpack_require__(1);
 
 	var _is = __webpack_require__(3);
 
 	var _is2 = _interopRequireDefault(_is);
-
-	var _default_factory = __webpack_require__(4);
-
-	var _default_factory2 = _interopRequireDefault(_default_factory);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -640,35 +785,72 @@ return /******/ (function(modules) { // webpackBootstrap
 	var List = function (_TypedNode) {
 	  _inherits(List, _TypedNode);
 
-	  function List(value, of) {
+	  function List(value) {
+	    var schema = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
 	    _classCallCheck(this, List);
 
 	    var _this = _possibleConstructorReturn(this, (List.__proto__ || Object.getPrototypeOf(List)).call(this));
 
 	    _this.children = [];
+	    _this.schema = schema;
 
-	    if (of) {
-	      if (!_is2.default.factory(of)) {
-	        if (!_is2.default.type(of) && !_is2.default.schema(of)) {
-	          var Instance = of;
+	    if (_this.constructor.schema) {
+	      _this.schema = _this.constructor.schema;
+	    }
 
-	          _this.type = {
+	    if (_this.schema) {
+	      if (_is2.default.node(_this.schema)) {
+	        var Instance = _this.schema;
+
+	        if (Instance.schema) {
+	          _this.nested = {
 	            parse: function parse() {
 	              for (var _len = arguments.length, args = Array(_len), _key2 = 0; _key2 < _len; _key2++) {
 	                args[_key2] = arguments[_key2];
 	              }
 
 	              return new (Function.prototype.bind.apply(Instance, [null].concat(args)))();
-	            }
+	            },
+	            validate: Instance.schema.validate.bind(Instance.schema)
 	          };
 	        } else {
-	          _this.type = of;
+	          _this.nested = {
+	            parse: function parse() {
+	              for (var _len2 = arguments.length, args = Array(_len2), _key3 = 0; _key3 < _len2; _key3++) {
+	                args[_key3] = arguments[_key3];
+	              }
+
+	              return new (Function.prototype.bind.apply(Instance, [null].concat(args)))();
+	            },
+	            validate: function validate() {
+	              return { count: 0 };
+	            }
+	          };
 	        }
-	      } else {
-	        _this.factory = of;
+	      } else if (_is2.default.schema(_this.schema) || _is2.default.type(_this.schema)) {
+	        _this.nested = _this.schema;
+	      } else if (_is2.default.factory(_this.schema)) {
+	        _this.nested = {
+	          parse: function parse() {
+	            var _this$schema;
+
+	            return (_this$schema = _this.schema).get.apply(_this$schema, arguments);
+	          },
+	          validate: function validate() {
+	            return { count: 0 };
+	          }
+	        };
 	      }
 	    } else {
-	      _this.factory = _default_factory2.default;
+	      _this.nested = {
+	        parse: function parse() {
+	          return _default_factory2.default.get.apply(_default_factory2.default, arguments);
+	        },
+	        validate: function validate() {
+	          return { count: 0 };
+	        }
+	      };
 	    }
 
 	    if (typeof value !== 'undefined') {
@@ -718,16 +900,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function push(value) {
 	      var sourceValue = (0, _utils.getSourceValue)(value);
 
-	      // console.log(this.type)
+	      var validationErr = this.nested.validate(sourceValue);
 
-	      if (this.type) {
-	        try {
-	          this.children.push(this.type.parse(sourceValue));
-	        } catch (err) {
-	          throw err;
-	        }
+	      if (validationErr.count > 0) {
+	        throw validationErr;
 	      } else {
-	        this.children.push(this.factory.get(sourceValue));
+	        this.children.push(this.nested.parse(sourceValue));
 	      }
 
 	      return this;
@@ -735,8 +913,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'get',
 	    value: function get() {
-	      for (var _len2 = arguments.length, args = Array(_len2), _key3 = 0; _key3 < _len2; _key3++) {
-	        args[_key3] = arguments[_key3];
+	      for (var _len3 = arguments.length, args = Array(_len3), _key4 = 0; _key4 < _len3; _key4++) {
+	        args[_key4] = arguments[_key4];
 	      }
 
 	      return this.map(function (node) {
@@ -761,6 +939,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function at(index) {
 	      if (index === 'last') {
 	        return this.children[this.length - 1];
+	      }
+
+	      if (index === 'first') {
+	        return this.children[0];
 	      }
 
 	      return this.children[index];
@@ -858,9 +1040,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.default = List;
 
-/***/ },
-/* 10 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -902,6 +1084,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _this.keys = [];
 	    _this.schema = schema;
 
+	    if (_this.constructor.schema) {
+	      _this.schema = _this.constructor.schema;
+	    }
+
 	    if (value !== undefined) {
 	      _this.set(value);
 	    }
@@ -916,7 +1102,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (!this.schema) {
 	        this.attributes[key] = _default_factory2.default.get(value);
 	      } else {
-	        this.attributes[key] = this.schema.validateField(key, value);
+	        this.attributes[key] = this.schema.serializeField(key, value);
 	      }
 
 	      if (this.keys.indexOf(key) === -1) {
@@ -946,6 +1132,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'clear',
 	    value: function clear() {
+	      this.keys = [];
 	      this.attributes = {};
 	    }
 	  }, {
@@ -953,16 +1140,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function merge(source) {
 	      var sourceValue = (0, _utils.getSourceValue)(source);
 
+	      if (this.schema) {
+	        var validationErr = this.schema.validate(source);
+
+	        if (validationErr.count > 0) {
+	          throw validationErr;
+	        }
+	      }
+
 	      if (!this.schema) {
 	        for (var name in sourceValue) {
 	          this.setAttribute(name, sourceValue[name]);
 	        }
-
-	        return;
+	      } else {
+	        this.attributes = Object.assign(this.attributes, this.schema.serialize(source));
 	      }
-
-	      var newAttributes = this.schema.validate(source);
-	      this.attributes = Object.assign(this.attributes, newAttributes);
 	    }
 	  }, {
 	    key: 'get',
@@ -1001,12 +1193,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'find',
 	    value: function find(key) {
-	      return typeof this.attributes[key] !== 'undefined' ? this.attributes[key] : undefined;
+	      return this.attributes[key];
 	    }
 	  }, {
 	    key: 'clone',
 	    value: function clone() {
-	      return new Map(this.get());
+	      return new Map(this.get(), this.schema);
 	    }
 	  }, {
 	    key: 'toJSON',
@@ -1025,9 +1217,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.default = Map;
 
-/***/ },
-/* 11 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -1078,9 +1270,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.default = Number;
 
-/***/ },
-/* 12 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -1117,78 +1309,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.default = String;
 
-/***/ },
-/* 13 */
-/***/ function(module, exports) {
-
-	/**
-	 * Convert array of 16 byte values to UUID string format of the form:
-	 * XXXXXXXX-XXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
-	 */
-	var byteToHex = [];
-	for (var i = 0; i < 256; ++i) {
-	  byteToHex[i] = (i + 0x100).toString(16).substr(1);
-	}
-
-	function bytesToUuid(buf, offset) {
-	  var i = offset || 0;
-	  var bth = byteToHex;
-	  return  bth[buf[i++]] + bth[buf[i++]] +
-	          bth[buf[i++]] + bth[buf[i++]] + '-' +
-	          bth[buf[i++]] + bth[buf[i++]] + '-' +
-	          bth[buf[i++]] + bth[buf[i++]] + '-' +
-	          bth[buf[i++]] + bth[buf[i++]] + '-' +
-	          bth[buf[i++]] + bth[buf[i++]] +
-	          bth[buf[i++]] + bth[buf[i++]] +
-	          bth[buf[i++]] + bth[buf[i++]];
-	}
-
-	module.exports = bytesToUuid;
-
-
-/***/ },
+/***/ }),
 /* 14 */
-/***/ function(module, exports) {
-
-	/* WEBPACK VAR INJECTION */(function(global) {// Unique ID creation requires a high quality random # generator.  In the
-	// browser this is a little complicated due to unknown quality of Math.random()
-	// and inconsistent support for the `crypto` API.  We do the best we can via
-	// feature-detection
-	var rng;
-
-	var crypto = global.crypto || global.msCrypto; // for IE 11
-	if (crypto && crypto.getRandomValues) {
-	  // WHATWG crypto RNG - http://wiki.whatwg.org/wiki/Crypto
-	  var rnds8 = new Uint8Array(16);
-	  rng = function whatwgRNG() {
-	    crypto.getRandomValues(rnds8);
-	    return rnds8;
-	  };
-	}
-
-	if (!rng) {
-	  // Math.random()-based (RNG)
-	  //
-	  // If all else fails, use Math.random().  It's fast, but is of unspecified
-	  // quality.
-	  var  rnds = new Array(16);
-	  rng = function() {
-	    for (var i = 0, r; i < 16; i++) {
-	      if ((i & 0x03) === 0) r = Math.random() * 0x100000000;
-	      rnds[i] = r >>> ((i & 0x03) << 3) & 0xff;
-	    }
-
-	    return rnds;
-	  };
-	}
-
-	module.exports = rng;
-
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
-
-/***/ },
-/* 15 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -1201,7 +1324,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var Utils = _interopRequireWildcard(_utils);
 
-	var _factory = __webpack_require__(7);
+	var _factory = __webpack_require__(8);
 
 	var _factory2 = _interopRequireDefault(_factory);
 
@@ -1213,7 +1336,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _type2 = _interopRequireDefault(_type);
 
-	var _schema = __webpack_require__(16);
+	var _schema = __webpack_require__(15);
 
 	var _schema2 = _interopRequireDefault(_schema);
 
@@ -1228,6 +1351,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _state = __webpack_require__(6);
 
 	var State = _interopRequireWildcard(_state);
+
+	__webpack_require__(19);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1245,9 +1370,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return _default_factory2.default.get(value);
 	};
 
-/***/ },
-/* 16 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -1273,6 +1398,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _utils = __webpack_require__(1);
 
+	var _error = __webpack_require__(7);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1281,6 +1408,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  function Schema() {
 	    var name = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'Unnamed';
 	    var fileds = arguments[1];
+	    var strict = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
 	    _classCallCheck(this, Schema);
 
@@ -1288,6 +1416,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    this.name = name;
 	    this.fields = {};
+	    this.strict = strict;
 
 	    if (fileds) {
 	      this.initTypes(fileds);
@@ -1295,89 +1424,134 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 
 	  _createClass(Schema, [{
+	    key: 'setProps',
+	    value: function setProps(props) {
+	      Object.assign(this, props);
+	    }
+	  }, {
 	    key: 'initTypes',
 	    value: function initTypes(types) {
 	      for (var key in types) {
 	        var input = types[key];
-	        var type = _type2.default.defineType(input);
 
-	        if (type === 'Type' || type === 'Schema') {
+	        if (_is2.default.type(input) || _is2.default.schema(input)) {
 	          this.fields[key] = input;
-	        } else if (type === 'Map') {
-	          this.fields[key] = new _type2.default({
-	            name: key,
-	            instance: _state.Map,
-	            validate: _is2.default.map,
-	            of: new Schema(key, input)
-	          });
-	        } else if (type === 'List') {
-	          var innerType = _type2.default.defineType(input[0]);
-	          var innerSchema = new Schema(key, input[0]);
+	        } else if (_is2.default.map(input)) {
+	          this.fields[key] = new Schema(key, input);
+	        } else if (_is2.default.list(input)) {
+	          var instance = input[0];
 
-	          if (innerType === 'Schema' || innerType === 'Type' || _is2.default.node(input[0])) {
-	            innerSchema = input[0];
+	          if (_is2.default.type(instance) || _is2.default.schema(instance)) {
+	            this.fields[key] = new _type2.default({
+	              name: instance.name,
+	              instance: _state.List,
+	              validate: instance.validate.bind(instance),
+	              nested: instance
+	            });
+	          } else if (_is2.default.node(instance)) {
+	            this.fields[key] = new _type2.default({
+	              name: instance.name || key,
+	              instance: _state.List,
+	              validate: _is2.default.list,
+	              nested: instance
+	            });
+	          } else if (_is2.default.map(instance)) {
+	            this.fields[key] = new _type2.default({
+	              name: instance.name || key,
+	              instance: _state.List,
+	              validate: _is2.default.list,
+	              nested: new Schema(key, instance)
+	            });
 	          }
-
+	        } else if (_is2.default.node(input)) {
+	          // throw new Error('Using type as instance currently unsupported.');
 	          this.fields[key] = new _type2.default({
-	            name: key,
-	            instance: _state.List,
-	            validate: _is2.default.list,
-	            of: innerSchema
+	            name: input.name || key,
+	            instance: input,
+	            validate: _is2.default.map
 	          });
 	        }
 	      }
-	    }
-	  }, {
-	    key: 'getDefault',
-	    value: function getDefault(key) {
-	      try {
-	        if (this.fields[key]) {
-	          return this.fields[key].getDefaultValue();
-	        }
-
-	        return new Error('Undefined value - ' + key);
-	      } catch (err) {
-	        throw err;
-	      }
-	    }
-	  }, {
-	    key: 'validateField',
-	    value: function validateField(key, value) {
-	      var field = this.fields[key];
-
-	      if (field instanceof _state.Any) {
-	        return new _state.Any(value);
-	      }
-
-	      if (typeof field === 'undefined') {
-	        return _default_factory2.default.get(value);
-	      }
-
-	      return field.parse(value);
 	    }
 	  }, {
 	    key: 'validate',
 	    value: function validate(obj) {
-	      var result = {};
-	      var errors = {};
-	      var validationFailed = false;
+	      var objKeys = Object.keys(obj);
+	      var fieldsKeys = Object.keys(this.fields);
+	      var errors = {
+	        name: this.name,
+	        count: 0,
+	        map: {}
+	      };
 
-	      for (var key in obj) {
-	        var value = obj[key];
+	      if (!_is2.default.map(obj)) {
+	        errors = new _error.ValidationError('Map', _type2.default.defineType(obj));
 
-	        try {
-	          result[key] = this.validateField(key, value);
-	        } catch (err) {
-	          validationFailed = true;
-	          errors[key] = err;
+	        return errors;
+	      }
+
+	      for (var i = 0; i < objKeys.length; i += 1) {
+	        var key = objKeys[i];
+	        var field = this.fields[key];
+
+	        if (typeof field !== 'undefined') {
+	          if (_is2.default.schema(field)) {
+	            field.strict = this.strict;
+	          }
+
+	          var validationError = field.validate(obj[key]);
+
+	          if (validationError.count > 0) {
+	            errors.map[key] = validationError;
+	            errors.count += validationError.count;
+	          }
+	        }
+
+	        if (this.strict && typeof field === 'undefined') {
+	          errors.map[key] = new _error.UndeclaredError(key);
+	          errors.count += 1;
 	        }
 	      }
 
-	      if (validationFailed) {
-	        throw errors;
+	      for (var _i = 0; _i < fieldsKeys.length; _i += 1) {
+	        var _key = fieldsKeys[_i];
+	        var type = this.fields[_key];
+
+	        if (type[(0, _utils.sym)('type')] && type.required && typeof obj[_key] === 'undefined') {
+	          errors.map[_key] = new _error.RequirementError(_key);
+	          errors.count += 1;
+	        }
+	      }
+
+	      return errors;
+	    }
+	  }, {
+	    key: 'serialize',
+	    value: function serialize(obj) {
+	      var result = {};
+
+	      for (var key in obj) {
+	        var field = this.fields[key];
+
+	        if (typeof field !== 'undefined') {
+	          result[key] = field.parse(obj[key]);
+	        } else {
+	          result[key] = _default_factory2.default.get(obj[key]);
+	        }
 	      }
 
 	      return result;
+	    }
+	  }, {
+	    key: 'serializeField',
+	    value: function serializeField(key, value) {
+	      var field = this.fields[key];
+
+	      if (typeof field !== 'undefined') {
+	        return field.parse(value);
+	      }
+
+	      return _default_factory2.default.get(value);
 	    }
 	  }, {
 	    key: 'parse',
@@ -1387,7 +1561,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'find',
 	    value: function find(key) {
-	      return typeof this.attributes[key] !== 'undefined' ? this.attributes[key] : undefined;
+	      return this.attributes[key];
 	    }
 	  }]);
 
@@ -1396,9 +1570,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.default = Schema;
 
-/***/ },
-/* 17 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -1435,9 +1609,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.default = Any;
 
-/***/ },
-/* 18 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ }),
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -1500,19 +1674,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.default = ObjectID;
 
-/***/ },
-/* 19 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ }),
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _uuid = __webpack_require__(20);
-
-	var _uuid2 = _interopRequireDefault(_uuid);
 
 	var _node = __webpack_require__(2);
 
@@ -1537,7 +1707,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var _this = _possibleConstructorReturn(this, (UUID.__proto__ || Object.getPrototypeOf(UUID)).call(this));
 
 	    if (value === (0, _utils.sym)('id')) {
-	      _this.value = (0, _uuid2.default)();
+	      _this.value = (0, _utils.uuid)();
 	    } else {
 	      _this.value = value;
 	    }
@@ -1549,165 +1719,79 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.default = UUID;
 
-/***/ },
-/* 20 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
 
-	var v1 = __webpack_require__(21);
-	var v4 = __webpack_require__(22);
+	'use strict';
 
-	var uuid = v4;
-	uuid.v1 = v1;
-	uuid.v4 = v4;
+	var _state = __webpack_require__(6);
 
-	module.exports = uuid;
+	var State = _interopRequireWildcard(_state);
 
+	var _type = __webpack_require__(5);
 
-/***/ },
-/* 21 */
-/***/ function(module, exports, __webpack_require__) {
+	var _type2 = _interopRequireDefault(_type);
 
-	// Unique ID creation requires a high quality random # generator.  We feature
-	// detect to determine the best RNG source, normalizing to a function that
-	// returns 128-bits of randomness, since that's what's usually required
-	var rng = __webpack_require__(14);
-	var bytesToUuid = __webpack_require__(13);
+	var _is = __webpack_require__(3);
 
-	// **`v1()` - Generate time-based UUID**
-	//
-	// Inspired by https://github.com/LiosK/UUID.js
-	// and http://docs.python.org/library/uuid.html
+	var _is2 = _interopRequireDefault(_is);
 
-	// random #'s we need to init node and clockseq
-	var _seedBytes = rng();
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	// Per 4.5, create and 48-bit node id, (47 random bits + multicast bit = 1)
-	var _nodeId = [
-	  _seedBytes[0] | 0x01,
-	  _seedBytes[1], _seedBytes[2], _seedBytes[3], _seedBytes[4], _seedBytes[5]
-	];
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-	// Per 4.2.2, randomize (14 bit) clockseq
-	var _clockseq = (_seedBytes[6] << 8 | _seedBytes[7]) & 0x3fff;
-
-	// Previous uuid creation time
-	var _lastMSecs = 0, _lastNSecs = 0;
-
-	// See https://github.com/broofa/node-uuid for API details
-	function v1(options, buf, offset) {
-	  var i = buf && offset || 0;
-	  var b = buf || [];
-
-	  options = options || {};
-
-	  var clockseq = options.clockseq !== undefined ? options.clockseq : _clockseq;
-
-	  // UUID timestamps are 100 nano-second units since the Gregorian epoch,
-	  // (1582-10-15 00:00).  JSNumbers aren't precise enough for this, so
-	  // time is handled internally as 'msecs' (integer milliseconds) and 'nsecs'
-	  // (100-nanoseconds offset from msecs) since unix epoch, 1970-01-01 00:00.
-	  var msecs = options.msecs !== undefined ? options.msecs : new Date().getTime();
-
-	  // Per 4.2.1.2, use count of uuid's generated during the current clock
-	  // cycle to simulate higher resolution clock
-	  var nsecs = options.nsecs !== undefined ? options.nsecs : _lastNSecs + 1;
-
-	  // Time since last uuid creation (in msecs)
-	  var dt = (msecs - _lastMSecs) + (nsecs - _lastNSecs)/10000;
-
-	  // Per 4.2.1.2, Bump clockseq on clock regression
-	  if (dt < 0 && options.clockseq === undefined) {
-	    clockseq = clockseq + 1 & 0x3fff;
+	_type2.default.Any = new _type2.default({
+	  name: 'Any',
+	  instance: State.Any,
+	  validate: function validate() {
+	    return true;
 	  }
+	});
 
-	  // Reset nsecs if clock regresses (new clockseq) or we've moved onto a new
-	  // time interval
-	  if ((dt < 0 || msecs > _lastMSecs) && options.nsecs === undefined) {
-	    nsecs = 0;
-	  }
+	_type2.default.Boolean = new _type2.default({
+	  name: 'Boolean',
+	  instance: State.Boolean,
+	  validate: _is2.default.boolean
+	});
 
-	  // Per 4.2.1.2 Throw error if too many uuids are requested
-	  if (nsecs >= 10000) {
-	    throw new Error('uuid.v1(): Can\'t create more than 10M uuids/sec');
-	  }
+	_type2.default.List = new _type2.default({
+	  name: 'List',
+	  instance: State.List,
+	  validate: _is2.default.list
+	});
 
-	  _lastMSecs = msecs;
-	  _lastNSecs = nsecs;
-	  _clockseq = clockseq;
+	_type2.default.Map = new _type2.default({
+	  name: 'Map',
+	  instance: State.Map,
+	  validate: _is2.default.map
+	});
 
-	  // Per 4.1.4 - Convert from unix epoch to Gregorian epoch
-	  msecs += 12219292800000;
+	_type2.default.Number = new _type2.default({
+	  name: 'Number',
+	  instance: State.Number,
+	  validate: _is2.default.number
+	});
 
-	  // `time_low`
-	  var tl = ((msecs & 0xfffffff) * 10000 + nsecs) % 0x100000000;
-	  b[i++] = tl >>> 24 & 0xff;
-	  b[i++] = tl >>> 16 & 0xff;
-	  b[i++] = tl >>> 8 & 0xff;
-	  b[i++] = tl & 0xff;
+	_type2.default.String = new _type2.default({
+	  name: 'String',
+	  instance: State.String,
+	  validate: _is2.default.string
+	});
 
-	  // `time_mid`
-	  var tmh = (msecs / 0x100000000 * 10000) & 0xfffffff;
-	  b[i++] = tmh >>> 8 & 0xff;
-	  b[i++] = tmh & 0xff;
+	_type2.default.UUID = new _type2.default({
+	  name: 'UUID',
+	  instance: State.UUID,
+	  validate: _is2.default.uuid
+	});
 
-	  // `time_high_and_version`
-	  b[i++] = tmh >>> 24 & 0xf | 0x10; // include version
-	  b[i++] = tmh >>> 16 & 0xff;
+	_type2.default.ObjectID = new _type2.default({
+	  name: 'ObjectID',
+	  instance: State.ObjectID,
+	  validate: _is2.default.object_id
+	});
 
-	  // `clock_seq_hi_and_reserved` (Per 4.2.2 - include variant)
-	  b[i++] = clockseq >>> 8 | 0x80;
-
-	  // `clock_seq_low`
-	  b[i++] = clockseq & 0xff;
-
-	  // `node`
-	  var node = options.node || _nodeId;
-	  for (var n = 0; n < 6; ++n) {
-	    b[i + n] = node[n];
-	  }
-
-	  return buf ? buf : bytesToUuid(b);
-	}
-
-	module.exports = v1;
-
-
-/***/ },
-/* 22 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var rng = __webpack_require__(14);
-	var bytesToUuid = __webpack_require__(13);
-
-	function v4(options, buf, offset) {
-	  var i = buf && offset || 0;
-
-	  if (typeof(options) == 'string') {
-	    buf = options == 'binary' ? new Array(16) : null;
-	    options = null;
-	  }
-	  options = options || {};
-
-	  var rnds = options.random || (options.rng || rng)();
-
-	  // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
-	  rnds[6] = (rnds[6] & 0x0f) | 0x40;
-	  rnds[8] = (rnds[8] & 0x3f) | 0x80;
-
-	  // Copy bytes to buffer, if provided
-	  if (buf) {
-	    for (var ii = 0; ii < 16; ++ii) {
-	      buf[i + ii] = rnds[ii];
-	    }
-	  }
-
-	  return buf || bytesToUuid(rnds);
-	}
-
-	module.exports = v4;
-
-
-/***/ }
+/***/ })
 /******/ ])
 });
 ;

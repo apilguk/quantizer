@@ -1,11 +1,8 @@
 import { assert } from 'chai';
 import { is, Type } from '../src';
+import { ValidationError } from '../src/error';
 
 const PrimitiveNode = value => ({ value });
-const testError = {
-  actual: 'String',
-  expected: 'TestType',
-};
 
 describe('Type', () => {
   it('constructor', () => {
@@ -14,68 +11,48 @@ describe('Type', () => {
       instance: PrimitiveNode,
       validate: () => {},
       required: false,
-      defaultValue: 0,
-      of: PrimitiveNode,
+      nested: PrimitiveNode,
     });
 
     assert.isDefined(createdType.name);
     assert.isDefined(createdType.validate);
     assert.isDefined(createdType.instance);
     assert.isDefined(createdType.required);
-    assert.isDefined(createdType.defaultValue);
-    assert.isDefined(createdType.of);
+    assert.isDefined(createdType.nested);
   });
 
-  it('parsing with correct type', () => {
+  it('serialization', () => {
     const createdType = new Type({
       name: 'TestType',
       instance: PrimitiveNode,
       validate: is.number,
-      defaultValue: 0,
     });
 
-    createdType.parse(1);
-    assert.deepEqual(createdType.parse(1), { value: 1 });
+    assert.deepEqual(createdType.parse(4), { value: 4 });
   });
 
-  it('parsing with incorrect type', () => {
+  it('validation', () => {
     const createdType = new Type({
       name: 'TestType',
       instance: PrimitiveNode,
       validate: is.number,
-      defaultValue: 0,
     });
 
-    try {
-      createdType.parse('str');
-    } catch (err) {
-      assert.deepEqual(err, testError);
-    }
+    const err = createdType.validate('str');
+
+    assert.deepEqual(err, new ValidationError('TestType', 'String'));
   });
 
-  it('get default value with correct type', () => {
+  it('validation with nested type', () => {
     const createdType = new Type({
       name: 'TestType',
       instance: PrimitiveNode,
       validate: is.number,
-      defaultValue: 5,
+      nested: Number,
     });
 
-    assert.deepEqual(createdType.getDefaultValue(), { value: 5 });
-  });
+    const err = createdType.validate('str');
 
-  it('get default value with incorrect type', () => {
-    const createdType = new Type({
-      name: 'TestType',
-      instance: PrimitiveNode,
-      validate: is.number,
-      defaultValue: 'str',
-    });
-
-    try {
-      createdType.getDefaultValue();
-    } catch (err) {
-      assert.deepEqual(err, testError);
-    }
+    assert.deepEqual(err, new ValidationError('List', 'String'));
   });
 });

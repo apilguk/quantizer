@@ -1,207 +1,535 @@
+import chai from 'chai';
+
 import { assert } from 'chai';
-import { is, Schema, Type } from '../src';
+import { is, Schema, Type, State } from '../src';
+import { ValidationError, RequirementError } from '../src/error';
 
-const Num = value => ({ value });
-const testError = {
-  actual: 'String',
-  expected: 'Num',
-};
+
 describe('Schema', () => {
-  it('initType', () => {
-    const schema = new Schema('TestSchema', {
-      id: new Type({
-        name: 'Num',
-        instance: Num,
-        validate: () => true,
-      }),
+  describe('regular declaration', () => {
+    it('initialization', () => {
+      const schemaA = new Schema('CellSchema', {
+        name: Type.String,
+        profile: {
+          id: Type.String,
+          age: Type.String,
+          messages: [{
+            id: Type.String,
+            text: Type.String,
+            history: [{
+              id: Type.String,
+            }],
+          }],
+        },
+      });
+
+      const expectedFields = {
+        name: Type.String,
+        profile: new Schema('profile', {
+          id: Type.String,
+          age: Type.String,
+          messages: new Type({
+            name: 'messages',
+            instance: State.List,
+            validate: is.list,
+            nested: new Schema('messages', {
+              id: Type.String,
+              text: Type.String,
+              history: new Type({
+                name: 'history',
+                instance: State.List,
+                validate: is.list,
+                nested: new Schema('history', {
+                  id: Type.String,
+                }),
+              }),
+            }),
+          }),
+        }),
+      };
+
+      assert.deepEqual(JSON.stringify(schemaA.fields), JSON.stringify(expectedFields));
     });
-    assert.deepEqual(schema.name, 'TestSchema');
+
+    it('validation', () => {
+      const schemaA = new Schema('CellSchema', {
+        name: Type.String,
+        profile: {
+          id: Type.String,
+          age: Type.String,
+          messages: [{
+            id: Type.String,
+            text: Type.String,
+            history: [{
+              id: Type.String,
+            }],
+          }],
+        },
+      });
+
+      const validationError = schemaA.validate({
+        name: 1,
+        profile: {
+          id: 1,
+          messages: [
+            {
+              id: 1,
+              history: [
+                { id: 1 },
+              ],
+            }],
+        },
+      });
+
+      assert.deepEqual(validationError, {
+        count: 4,
+        map: {
+          name: new ValidationError('String', 'Number'),
+          profile: {
+            count: 3,
+            map: {
+              id: new ValidationError('String', 'Number'),
+              messages: {
+                count: 2,
+                list: [
+                  {
+                    count: 2,
+                    map: {
+                      history: {
+                        count: 1,
+                        list: [
+                          {
+                            count: 1,
+                            map: {
+                              id: new ValidationError('String', 'Number'),
+                            },
+                            name: 'history',
+                          },
+                        ],
+                        name: 'history',
+                      },
+                      id: new ValidationError('String', 'Number'),
+                    },
+                    name: 'messages',
+                  },
+                ],
+                name: 'messages',
+              },
+            },
+            name: 'profile',
+          },
+        },
+        name: 'CellSchema',
+      });
+    });
+
+    it('serialization', () => {
+      const schemaA = new Schema('CellSchema', {
+        name: Type.String,
+        profile: {
+          id: Type.String,
+          age: Type.String,
+          messages: [{
+            id: Type.String,
+            text: Type.String,
+            history: [{
+              id: Type.String,
+            }],
+          }],
+        },
+      });
+
+      const actualNode = schemaA.parse({
+        name: 'John',
+        profile: {
+          id: '1',
+          age: '24',
+          messages: [
+            { id: '1', text: 'foo', history: [{ id: '1' }, { id: '2' }] },
+            { id: '2', text: 'bar', history: [{ id: '1' }, { id: '2' }] },
+          ],
+        },
+      });
+
+      const expectedNode = new State.Map({
+        name: 'John',
+        profile: {
+          id: '1',
+          age: '24',
+          messages: [
+            { id: '1', text: 'foo', history: [{ id: '1' }, { id: '2' }] },
+            { id: '2', text: 'bar', history: [{ id: '1' }, { id: '2' }] },
+          ],
+        },
+      });
+
+      assert.deepEqual(JSON.stringify(actualNode), JSON.stringify(expectedNode));
+    });
   });
 
-  describe('just validation', () => {
-    it('all valid', () => {
-      const schema = new Schema('TestSchema', {
-        x: new Type({
-          name: 'Num',
-          instance: Num,
-          validate: is.number,
-        }),
-        y: new Type({
-          name: 'Num',
-          instance: Num,
-          validate: is.number,
-        }),
+  describe('declaration with nested types and schemas', () => {
+    it('initialization', () => {
+      const schemaA = new Schema('MilestoneSchema', {
+        id: Type.String,
       });
-      assert.deepEqual(schema.justValidate({ x: 1, y: 1 }), true);
+
+      const schemaB = new Schema('MessageSchema', {
+        id: Type.String,
+        text: Type.String,
+        history: [schemaA],
+      });
+
+      const schemaC = new Schema('UserSchema', {
+        id: Type.String,
+        age: Type.String,
+        messages: [schemaB],
+      });
+
+      const schemaD = new Schema('CellSchema', {
+        name: Type.String,
+        profile: schemaC,
+      });
+
+      const expectedFields = {
+        name: Type.String,
+        profile: new Schema('UserSchema', {
+          id: Type.String,
+          age: Type.String,
+          messages: new Type({
+            name: 'MessageSchema',
+            instance: State.List,
+            validate: is.list,
+            nested: new Schema('MessageSchema', {
+              id: Type.String,
+              text: Type.String,
+              history: new Type({
+                name: 'MilestoneSchema',
+                instance: State.List,
+                validate: is.list,
+                nested: new Schema('MilestoneSchema', {
+                  id: Type.String,
+                }),
+              }),
+            }),
+          }),
+        }),
+      };
+
+      assert.deepEqual(JSON.stringify(schemaD.fields), JSON.stringify(expectedFields));
     });
 
-    it('invalid field', () => {
-      const schema = new Schema('TestSchema', {
-        x: new Type({
-          name: 'Num',
-          instance: Num,
-          validate: is.number,
-        }),
-        y: new Type({
-          name: 'Num',
-          instance: Num,
-          validate: is.number,
-        }),
+    it('validation', () => {
+      const schemaA = new Schema('MilestoneSchema', {
+        id: Type.String,
       });
-      try {
-        schema.justValidate({ x: 'a', y: 1 });
-      } catch (err) {
-        assert.deepEqual(err, { x: { actual: 'String', expected: 'Num' } });
-      }
+
+      const schemaB = new Schema('MessageSchema', {
+        id: Type.String,
+        text: Type.String,
+        history: [schemaA],
+      });
+
+      const schemaC = new Schema('UserSchema', {
+        id: Type.String,
+        age: Type.String,
+        messages: [schemaB],
+      });
+
+      const schemaD = new Schema('CellSchema', {
+        name: Type.String,
+        profile: schemaC,
+      });
+
+      const validationError = schemaD.validate({
+        name: 1,
+        profile: {
+          id: 1,
+          messages: [
+            {
+              id: 1,
+              history: [
+                { id: 1 },
+              ],
+            }],
+        },
+      });
+
+      assert.deepEqual(validationError, {
+        count: 4,
+        map: {
+          name: new ValidationError('String', 'Number'),
+          profile: {
+            count: 3,
+            map: {
+              id: new ValidationError('String', 'Number'),
+              messages: {
+                count: 2,
+                list: [
+                  {
+                    count: 2,
+                    map: {
+                      history: {
+                        count: 1,
+                        list: [
+                          {
+                            count: 1,
+                            map: {
+                              id: new ValidationError('String', 'Number'),
+                            },
+                            name: 'MilestoneSchema',
+                          },
+                        ],
+                        name: 'MilestoneSchema',
+                      },
+                      id: new ValidationError('String', 'Number'),
+                    },
+                    name: 'MessageSchema',
+                  },
+                ],
+                name: 'MessageSchema',
+              },
+            },
+            name: 'UserSchema',
+          },
+        },
+        name: 'CellSchema',
+      });
     });
 
-    it('no required field', () => {
-      const schema = new Schema('TestSchema', {
-        x: new Type({
-          name: 'Num',
-          instance: Num,
-          validate: is.number,
-        }),
-        y: new Type({
-          name: 'Num',
-          instance: Num,
-          required: true,
-          validate: is.number,
-        }),
+    it('serialization', () => {
+      const schemaA = new Schema('MilestoneSchema', {
+        id: Type.String,
       });
-      try {
-        schema.justValidate({ x: 2 });
-      } catch (err) {
-        assert.deepEqual(err, { y: 'Value is not defined' });
-      }
-    });
 
-    it('deep validate', () => {
-      const schema1 = new Schema('TestSchema1', {
-        x: new Type({
-          name: 'Num',
-          instance: Num,
-          validate: is.number,
-        }),
+      const schemaB = new Schema('MessageSchema', {
+        id: Type.String,
+        text: Type.String,
+        history: [schemaA],
       });
-      const schema2 = new Schema('TestSchema2', {
-        x: new Type({
-          name: 'Num',
-          instance: Num,
-          validate: is.number,
-        }),
-        y: schema1,
+
+      const schemaC = new Schema('UserSchema', {
+        id: Type.String,
+        age: Type.String,
+        messages: [schemaB],
       });
-      try {
-        schema2.justValidate({ x: 2, y: { x: 'a' } });
-      } catch (err) {
-        assert.deepEqual(err, { y: { x: { actual: 'String', expected: 'Num' } }});
-      }
+
+      const schemaD = new Schema('CellSchema', {
+        name: Type.String,
+        profile: schemaC,
+      });
+
+      const actualNode = schemaD.parse({
+        name: 'John',
+        profile: {
+          id: '1',
+          age: '24',
+          messages: [
+            { id: '1', text: 'foo', history: [{ id: '1' }, { id: '2' }] },
+            { id: '2', text: 'bar', history: [{ id: '1' }, { id: '2' }] },
+          ],
+        },
+      });
+
+      const expectedNode = new State.Map({
+        name: 'John',
+        profile: {
+          id: '1',
+          age: '24',
+          messages: [
+            { id: '1', text: 'foo', history: [{ id: '1' }, { id: '2' }] },
+            { id: '2', text: 'bar', history: [{ id: '1' }, { id: '2' }] },
+          ],
+        },
+      });
+
+      assert.deepEqual(JSON.stringify(actualNode), JSON.stringify(expectedNode));
     });
   });
 
-  describe('validation', () => {
-    it('field with correct values', () => {
-      const schema = new Schema('TestSchema', {
-        x: new Type({
-          name: 'Num',
-          instance: Num,
-          validate: is.number,
-        }),
-        y: new Type({
-          name: 'Num',
-          instance: Num,
-          validate: is.number,
-        }),
-      });
-      assert.deepEqual(schema.validateField('x', 1), { value: 1 });
-    });
-
-    it('field with incorrect values', () => {
-      const schema = new Schema('TestSchema', {
-        x: new Type({
-          name: 'Num',
-          instance: Num,
-          validate: is.number,
-        }),
-        y: new Type({
-          name: 'Num',
-          instance: Num,
-          validate: is.number,
-        }),
+  describe('declaration with nested instances', () => {
+    it('initialization', () => {
+      const schemaA = new Schema('TestInstance', {
+        id: Type.Number,
+        name: Type.String,
       });
 
-      try {
-        schema.validateField('x', 'str');
-      } catch (err) {
-        assert.deepEqual(err, testError);
+      class TestInstance extends State.Map {
+        static schema = schemaA;
       }
-    });
 
-    it('with correct values', () => {
-      const schema = new Schema('TestSchema', {
-        x: new Type({
-          name: 'Num',
-          instance: Num,
-          validate: is.number,
-        }),
-        y: new Type({
-          name: 'Num',
-          instance: Num,
-          validate: is.number,
-        }),
+      const schemaB = new Schema('CellSchema', {
+        list: [TestInstance],
       });
 
-      assert.deepEqual(schema.validate({ x: 1, y: 1 }), { x: { value: 1 }, y: { value: 1 } });
+      const expectedFields = {
+        list: new Type({
+          name: 'TestInstance',
+          validate: is.list,
+          instance: State.List,
+          nested: TestInstance,
+        }),
+      };
+
+      assert.deepEqual(JSON.stringify(schemaB.fields), JSON.stringify(expectedFields));
     });
 
-    it('with incorrect values', () => {
-      const schema = new Schema('TestSchema', {
-        x: new Type({
-          name: 'Num',
-          instance: Num,
-          validate: is.number,
-        }),
-        y: new Type({
-          name: 'Num',
-          instance: Num,
-          validate: is.number,
-        }),
+    it('validation', () => {
+      const schemaA = new Schema('TestInstance', {
+        id: Type.Number,
+        name: Type.String,
       });
 
-      try {
-        schema.validate({ x: 'str', y: 'str' });
-      } catch (err) {
-        assert.deepEqual(err, {
-          x: testError,
-          y: testError,
-        });
+      class TestInstance extends State.Map {
+        static schema = schemaA;
       }
+
+      const schemaB = new Schema('CellSchema', {
+        list: [TestInstance],
+      });
+
+      const validationError = schemaB.validate({
+        list: [{ id: 'str', name: 1 }],
+      });
+
+      const expectedError = {
+        count: 2,
+        map: {
+          list: {
+            count: 2,
+            list: [
+              {
+                count: 2,
+                map: {
+                  id: new ValidationError('Number', 'String'),
+                  name: new ValidationError('String', 'Number'),
+                },
+                name: 'TestInstance',
+              },
+            ],
+            name: 'TestInstance',
+          },
+        },
+        name: 'CellSchema',
+      };
+
+      assert.deepEqual(validationError, expectedError);
     });
 
-    it('with not providing required value', () => {
-      const schema = new Schema('TestSchema', {
-        x: new Type({
-          name: 'Num',
-          instance: e => ({ value: e }),
-          validate: () => true,
-          required: true,
-        }),
-        y: new Type({
-          name: 'Num',
-          instance: Num,
-          validate: is.number,
-        }),
+    it('serialization', () => {
+      const schemaA = new Schema('TestInstance', {
+        id: Type.Number,
+        name: Type.String,
       });
-      try {
-        schema.validate({ y: 2 });
-      } catch (err) {
-        assert.deepEqual(err, { x: 'Value is not defined' });
+
+      class TestInstance extends State.Map {
+        static schema = schemaA;
       }
+
+      const schemaB = new Schema('CellSchema', {
+        list: [TestInstance],
+      });
+
+      const actualNode = schemaB.parse({
+        list: [{ id: 1, name: 'John' }],
+      });
+
+      const expectedNode = new State.Map({}, schemaB);
+      const innerList = new State.List([], TestInstance);
+
+      innerList.push({ id: 1, name: 'John' });
+
+      expectedNode.keys = ['list'];
+      expectedNode.attributes = {
+        list: innerList,
+      };
+
+      assert.deepEqual(JSON.stringify(actualNode), JSON.stringify(expectedNode));
+    });
+  });
+
+  describe('common tests', () => {
+
+    it('one correct value', () => {
+      const schema = new Schema('TestSchema', {
+        x: Type.Number,
+        y: Type.Number,
+      });
+
+      assert.deepEqual(schema.validate({ x: 1 }), {
+        name: 'TestSchema',
+        count: 0,
+        map: {},
+      });
+    });
+
+    it('one incorrect values', () => {
+      const schema = new Schema('TestSchema', {
+        x: Type.Number,
+        y: Type.Number,
+      });
+
+      assert.deepEqual(schema.validate({ y: 'str' }), {
+        name: 'TestSchema',
+        count: 1,
+        map: {
+          y: new ValidationError('Number', 'String'),
+        },
+      });
+    });
+
+    it('couple correct values', () => {
+      const schema = new Schema('TestSchema', {
+        x: Type.Number,
+        y: Type.Number,
+      });
+
+      assert.deepEqual(schema.validate({ x: 1, y: 1 }), {
+        count: 0,
+        map: {},
+        name: 'TestSchema',
+      });
+    });
+
+    it('couple incorrect value', () => {
+      const schema = new Schema('TestSchema', {
+        x: Type.Number,
+        y: Type.Number,
+      });
+
+      assert.deepEqual(schema.validate({ x: 'str', y: 'str' }), {
+        name: 'TestSchema',
+        count: 2,
+        map: {
+          x: new ValidationError('Number', 'String'),
+          y: new ValidationError('Number', 'String'),
+        },
+      });
+    });
+
+    it('without required field', () => {
+      const schema = new Schema('TestSchema', {
+        x: Type.Number.isRequired,
+        y: Type.Number,
+      });
+
+      const err = schema.validate({ y: 2 });
+
+      assert.deepEqual(err, {
+        name: 'TestSchema',
+        count: 1,
+        map: {
+          x: new RequirementError('x'),
+        },
+      });
+    });
+
+    it('factory from instance', () => {
+
     });
 
     it('deep schema with incorrect values', () => {
-      const Milestone = new Schema('MessageSchema', {
+
+      const Milestone = new Schema('MilestoneSchema', {
         id: Type.String,
       });
 
@@ -213,7 +541,7 @@ describe('Schema', () => {
 
       const UserSchema = new Schema('UserSchema', {
         id: Type.String,
-        age: Type.Number,
+        age: Type.String,
         messages: [MessageSchema],
       });
 
@@ -222,46 +550,60 @@ describe('Schema', () => {
         profile: UserSchema,
       });
 
-      try {
-        schema.validate({
-          name: 1,
+      const validationError = schema.validate({
+        name: 1,
+        profile: {
+          id: 1,
+          messages: [
+            {
+              id: 1,
+              history: [
+                { id: 1 },
+              ],
+            }],
+        },
+      });
+
+      assert.deepEqual(validationError, {
+        count: 4,
+        map: {
+          name: new ValidationError('String', 'Number'),
           profile: {
-            id: 1,
-            messages: [
-              {
-                id: 1,
-                history: [
-                  { id: 1 },
+            count: 3,
+            map: {
+              id: new ValidationError('String', 'Number'),
+              messages: {
+                count: 2,
+                list: [
+                  {
+                    count: 2,
+                    map: {
+                      history: {
+                        count: 1,
+                        list: [
+                          {
+                            count: 1,
+                            map: {
+                              id: new ValidationError('String', 'Number'),
+                            },
+                            name: 'MilestoneSchema',
+                          },
+                        ],
+                        name: 'MilestoneSchema',
+                      },
+                      id: new ValidationError('String', 'Number'),
+                    },
+                    name: 'MessageSchema',
+                  },
                 ],
-              }],
-          },
-        });
-      } catch (err) {
-        assert.deepEqual(err, {
-          name: {
-            actual: 'Number',
-            expected: 'String',
-          },
-          profile: {
-            id: {
-              actual: 'Number',
-              expected: 'String',
-            },
-            messages: {
-              history: {
-                id: {
-                  actual: 'Number',
-                  expected: 'String',
-                },
-              },
-              id: {
-                actual: 'Number',
-                expected: 'String',
+                name: 'MessageSchema',
               },
             },
+            name: 'UserSchema',
           },
-        });
-      }
+        },
+        name: 'CellSchema',
+      });
     });
   });
 });

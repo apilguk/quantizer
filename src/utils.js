@@ -1,9 +1,3 @@
-import Factory from './factory';
-
-export function factoryCreator(fn) {
-  return new Factory(fn);
-}
-
 export function sym(name) {
   return `[[${name}]]`;
 }

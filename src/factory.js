@@ -1,6 +1,6 @@
 import { sym } from './utils';
 
-export default class FactoryFunction {
+export default class Factory {
   constructor(factory) {
     this[sym('factory')] = true;
 

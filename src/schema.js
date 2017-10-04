@@ -1,164 +1,149 @@
 import is from './is';
 import DefaultNodesFactory from './state/default_factory';
 import Type from './type';
-import { Map, Any, List } from './state';
+import { Map, List } from './state';
 import { sym } from './utils';
+import { ValidationError, RequirementError, UndeclaredError } from './error';
 
 export default class Schema {
-  constructor(name = 'Unnamed', fileds) {
+  constructor(name = 'Unnamed', fileds, strict = false) {
     this[sym('schema')] = true;
 
     this.name = name;
     this.fields = {};
+    this.strict = strict;
 
     if (fileds) {
       this.initTypes(fileds);
     }
   }
 
+  setProps(props) {
+    Object.assign(this, props);
+  }
+
   initTypes(types) {
     for (const key in types) {
       const input = types[key];
-      const type = Type.defineType(input);
 
-      if (type === 'Type' || type === 'Schema') {
+      if (is.type(input) || is.schema(input)) {
         this.fields[key] = input;
-      } else if (type === 'Map') {
-        this.fields[key] = new Type({
-          name: key,
-          instance: Map,
-          validate: is.map,
-          of: new Schema(key, input),
-        });
-      } else if (type === 'List') {
-        const innerType = Type.defineType(input[0]);
-        let innerSchema = new Schema(key, input[0]);
+      } else if (is.map(input)) {
+        this.fields[key] = new Schema(key, input);
+      } else if (is.list(input)) {
+        const instance = input[0];
 
-        if (
-          innerType === 'Schema' ||
-          innerType === 'Type' ||
-          is.node(input[0])
-        ) {
-          innerSchema = input[0];
+        if (is.type(instance) || is.schema(instance)) {
+          this.fields[key] = new Type({
+            name: instance.name,
+            instance: List,
+            validate: instance.validate.bind(instance),
+            nested: instance,
+          });
+        } else if (is.node(instance)) {
+          this.fields[key] = new Type({
+            name: instance.name || key,
+            instance: List,
+            validate: is.list,
+            nested: instance,
+          });
+        } else if (is.map(instance)) {
+          this.fields[key] = new Type({
+            name: instance.name || key,
+            instance: List,
+            validate: is.list,
+            nested: new Schema(key, instance),
+          });
         }
-
+      } else if (is.node(input)) {
         this.fields[key] = new Type({
-          name: key,
-          instance: List,
-          validate: is.list,
-          of: innerSchema,
+          name: input.name || key,
+          instance: input,
+          validate: is.map,
         });
       }
     }
-  }
-
-  getDefault(key) {
-    try {
-      if (this.fields[key]) {
-        return this.fields[key].getDefaultValue();
-      }
-
-      return new Error(`Undefined value - ${key}`);
-    } catch (err) {
-      throw err;
-    }
-  }
-
-  validateField(key, value) {
-    const field = this.fields[key];
-
-    if (field instanceof Any) {
-      return new Any(value);
-    }
-
-    if (typeof field === 'undefined') {
-      return DefaultNodesFactory.get(value);
-    }
-
-    return field.parse(value);
-  }
-
-  justValidateField(key, value) {
-    const field = this.fields[key];
-
-    if (field instanceof Any || typeof field === 'undefined') {
-      return true;
-    }
-
-    if (field instanceof Schema) {
-      return field.justValidate(value);
-    }
-
-    return field.checkValidation(value);
   }
 
   validate(obj) {
-    const result = {};
-    const errors = {};
-    let validationFailed = false;
+    const objKeys = Object.keys(obj);
+    const fieldsKeys = Object.keys(this.fields);
+    let errors = {
+      name: this.name,
+      count: 0,
+      map: {},
+    };
 
-    for (const key in obj) {
-      const value = obj[key];
+    if (!is.map(obj)) {
+      errors = new ValidationError('Map', Type.defineType(obj));
 
-      try {
-        result[key] = this.validateField(key, value);
-      } catch (err) {
-        validationFailed = true;
-        errors[key] = err;
+      return errors;
+    }
+
+    for (let i = 0; i < objKeys.length; i += 1) {
+      const key = objKeys[i];
+      const field = this.fields[key];
+
+      if (typeof field !== 'undefined') {
+        if (is.schema(field)) {
+          field.strict = this.strict;
+        }
+
+        const validationError = field.validate(obj[key]);
+
+        if (validationError.count > 0) {
+          errors.map[key] = validationError;
+          errors.count += validationError.count;
+        }
+      }
+
+      if (this.strict && typeof field === 'undefined') {
+        errors.map[key] = new UndeclaredError(key);
+        errors.count += 1;
       }
     }
 
-    Object.keys(this.fields).forEach((key) => {
+    for (let i = 0; i < fieldsKeys.length; i += 1) {
+      const key = fieldsKeys[i];
       const type = this.fields[key];
+
       if (
         type[sym('type')] &&
         type.required &&
         typeof obj[key] === 'undefined'
       ) {
-        validationFailed = true;
-        errors[key] = 'Value is not defined';
+        errors.map[key] = new RequirementError(key);
+        errors.count += 1;
       }
-    });
+    }
 
-    if (validationFailed) {
-      throw errors;
+    return errors;
+  }
+
+  serialize(obj) {
+    const result = {};
+
+    for (const key in obj) {
+      const field = this.fields[key];
+
+      if (typeof field !== 'undefined') {
+        result[key] = field.parse(obj[key]);
+      } else {
+        result[key] = DefaultNodesFactory.get(obj[key]);
+      }
     }
 
     return result;
   }
 
-  justValidate(obj) {
-    const errors = {};
-    let validationFailed = false;
+  serializeField(key, value) {
+    const field = this.fields[key];
 
-    for (const key in obj) {
-      const value = obj[key];
-
-      try {
-        this.justValidateField(key, value);
-      } catch (err) {
-        validationFailed = true;
-        errors[key] = err;
-      }
+    if (typeof field !== 'undefined') {
+      return field.parse(value);
     }
 
-    Object.keys(this.fields).forEach((key) => {
-      const type = this.fields[key];
-      if (
-        type[sym('type')] &&
-        type.required &&
-        typeof obj[key] === 'undefined'
-      ) {
-        validationFailed = true;
-        errors[key] = 'Value is not defined';
-      }
-    });
-
-    if (validationFailed) {
-      throw errors;
-    }
-
-    return true;
+    return DefaultNodesFactory.get(value);
   }
 
   parse(value) {
@@ -166,8 +151,6 @@ export default class Schema {
   }
 
   find(key) {
-    return typeof this.attributes[key] !== 'undefined'
-      ? this.attributes[key]
-      : undefined;
+    return this.attributes[key];
   }
 }

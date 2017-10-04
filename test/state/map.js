@@ -1,5 +1,6 @@
 import { assert } from 'chai';
 import { State, Schema, Type } from '../../src';
+import { RequirementError } from '../../src/error';
 
 
 describe('Map', () => {
@@ -75,22 +76,22 @@ describe('Map', () => {
   });
 
   it('set without required field', () => {
-    try {
-      const map = new State.Map(
-        { a: '0' },
-        new Schema('Test', { a: Type.String.isRequired }),
-      );
-      map.set({ x: '1' });
-    } catch (err) {
-      assert.deepEqual(err, { a: 'Value is not defined' });
-    }
+    const schema = new Schema('TestSchema', { x: Type.String.isRequired });
+    const err = schema.validate({ y: '0' });
+
+    assert.deepEqual(err, {
+      name: 'TestSchema',
+      count: 1,
+      map: {
+        x: new RequirementError('x'),
+      },
+    });
   });
 
   it('set with Any value', () => {
     const schema = new Schema('TestSchema', {
       x: Type.Any,
     });
-
 
     const map = new State.Map({ x: 10 }, schema);
 

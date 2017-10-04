@@ -10,6 +10,10 @@ export default class Map extends TypedNode {
     this.keys = [];
     this.schema = schema;
 
+    if (this.constructor.schema) {
+      this.schema = this.constructor.schema;
+    }
+
     if (value !== undefined) {
       this.set(value);
     }
@@ -21,7 +25,7 @@ export default class Map extends TypedNode {
     if (!this.schema) {
       this.attributes[key] = DefaultNodesFactory.get(value);
     } else {
-      this.attributes[key] = this.schema.validateField(key, value);
+      this.attributes[key] = this.schema.serializeField(key, value);
     }
 
     if (this.keys.indexOf(key) === -1) {
@@ -55,16 +59,21 @@ export default class Map extends TypedNode {
   merge(source) {
     const sourceValue = getSourceValue(source);
 
+    if (this.schema) {
+      const validationErr = this.schema.validate(source);
+
+      if (validationErr.count > 0) {
+        throw validationErr;
+      }
+    }
+
     if (!this.schema) {
       for (const name in sourceValue) {
         this.setAttribute(name, sourceValue[name]);
       }
-
-      return;
+    } else {
+      this.attributes = Object.assign(this.attributes, this.schema.serialize(source));
     }
-
-    const newAttributes = this.schema.validate(source);
-    this.attributes = Object.assign(this.attributes, newAttributes);
   }
 
   get(...args) {
@@ -102,7 +111,7 @@ export default class Map extends TypedNode {
   }
 
   clone() {
-    return new Map(this.get());
+    return new Map(this.get(), this.schema);
   }
 
   toJSON() {
