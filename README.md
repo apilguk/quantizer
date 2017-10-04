@@ -116,10 +116,10 @@ const type = Type({
     instance: State.Number,
 });
 
-type.validate('foo')
+type.validate('foo');
 => new ValidationError('Number', 'String')
 
-type.parse(1)
+type.parse(1);
 => new State.Number(1)
 ````
 
@@ -147,7 +147,7 @@ import { Type, Schema } from 'quantizer';
 
 const user = new Schema('User', {
 	id: Type.Number,
-    name: Type.String
+  name: Type.String,
 });
 
 type.validate([]);
@@ -155,15 +155,15 @@ type.validate([]);
 
 type.validate({
 	id: 'John',
-    name: 1,
+   name: 1,
 });
 
 => {
   name: "User",
   count: 2,
   map: {
-  	id: new ValidationError('Number', 'String'),
-    name: new ValidationError('String', 'Number')
+    id: new ValidationError('Number', 'String'),
+    name: new ValidationError('String', 'Number'),
   }
 }
 
@@ -178,8 +178,8 @@ A few variations of using Schema:
 import { State, Schema } from 'quantizer';
 
 const userSchema = new Schema('User', {
-	id: Type.Number,
-  name: Type.String
+  id: Type.Number,
+  name: Type.String,
 });
 
 // just type validation
@@ -196,9 +196,9 @@ const listWithSchemaValidation = new Schema('UserList', {
 class UserModel extends State.Map {
 	static schema = userSchema;
     
-	constructor(data) {
-    	super(data, UserModel.schema)
-    }
+  constructor(data) {
+    super(data, UserModel.schema)
+  }
 }
 
 const listWithIstanceFactory = new Schema('UserList', {
@@ -207,15 +207,15 @@ const listWithIstanceFactory = new Schema('UserList', {
 
 // list type like instance factory
 class UserModel extends State.List {
-	constructor(value) {
-    	super(value, UserModel);
-    }
+  constructor(value) {
+    super(value, UserModel);
+  }
 }
 
 const userListType = new Type({
 	name: 'UsersList',
-    instance: DocumentFieldList,
-	validate: is.list
+  instance: DocumentFieldList,
+	validate: is.list,
 });
 
 const listTypeWithIstanceFactory = new Schema('UserList', {
