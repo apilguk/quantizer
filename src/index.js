@@ -6,7 +6,7 @@ import Schema from './schema';
 import is from './is';
 import DefaultFactory from './state/default_factory';
 import * as State from './state';
-import initBuildInTypes from './types_build_in'; /* eslint no-unused-vars: 0 */
+import './types_build_in';
 
 export {
   Utils,

@@ -40,13 +40,6 @@ export default class Schema {
             validate: instance.validate.bind(instance),
             nested: instance,
           });
-        } else if (is.map(instance)) {
-          this.fields[key] = new Type({
-            name: instance.name || key,
-            instance: List,
-            validate: is.list,
-            nested: new Schema(key, instance),
-          });
         } else if (is.node(instance)) {
           this.fields[key] = new Type({
             name: instance.name || key,
@@ -54,9 +47,20 @@ export default class Schema {
             validate: is.list,
             nested: instance,
           });
+        } else if (is.map(instance)) {
+          this.fields[key] = new Type({
+            name: instance.name || key,
+            instance: List,
+            validate: is.list,
+            nested: new Schema(key, instance),
+          });
         }
       } else if (is.node(input)) {
-        throw new Error('Using type as instance currently unsupported.');
+        this.fields[key] = new Type({
+          name: input.name || key,
+          instance: input,
+          validate: is.map,
+        });
       }
     }
   }
