@@ -3,7 +3,7 @@ import DefaultNodesFactory from './state/default_factory';
 import Type from './type';
 import { Map, List } from './state';
 import { sym } from './utils';
-import { ValidationError, RequirementError, UndeclaredError, DefaultError } from './error';
+import { ValidationError, RequirementError, UndeclaredError } from './error';
 
 export default class Schema {
   constructor(name = 'Unnamed', fileds, strict = false) {
@@ -25,53 +25,40 @@ export default class Schema {
   initTypes(types) {
     for (const key in types) {
       const input = types[key];
-      // const type = Type.defineType(input);
 
       if (is.type(input) || is.schema(input)) {
         this.fields[key] = input;
       } else if (is.map(input)) {
-        const schema = new Schema(key, input);
-
-        this.fields[key] = new Type({
-          name: key,
-          instance: Map,
-          validate: schema.validate.bind(schema),
-          of: schema,
-        });
+        this.fields[key] = new Schema(key, input);
       } else if (is.list(input)) {
         const instance = input[0];
 
-        if (is.schema(instance) || is.type(instance)) {
+        if (is.type(instance) || is.schema(instance)) {
           this.fields[key] = new Type({
             name: instance.name,
             instance: List,
-            validate: instance.validate,
-            of: instance,
+            validate: instance.validate.bind(instance),
+            nested: instance,
           });
-        }
-
-        if (is.node(instance) && instance.schema && is.schema(instance.schema)) {
+        } else if (is.map(instance)) {
           this.fields[key] = new Type({
-            name: instance.name,
+            name: instance.name || key,
             instance: List,
-            validate: instance.schema.validate.bind(instance.schema),
-            of: instance,
+            validate: is.list,
+            nested: new Schema(key, instance),
+          });
+        } else if (is.node(instance)) {
+          this.fields[key] = new Type({
+            name: instance.name || key,
+            instance: List,
+            validate: is.list,
+            nested: instance,
           });
         }
-
-      } else {
-        // console.log(is.schema(input), input)
-
+      } else if (is.node(input)) {
+        throw new Error('Using type as instance currently unsupported.');
       }
     }
-  }
-
-  getDefault(key) {
-    if (this.fields[key]) {
-      return this.fields[key].getDefaultValue();
-    }
-
-    return new DefaultError(key);
   }
 
   validate(obj) {
@@ -161,9 +148,5 @@ export default class Schema {
 
   find(key) {
     return this.attributes[key];
-  }
-
-  static BindSchema(node, schema) {
-    node.validate = schema.validate.bind(schema);
   }
 }

@@ -64,7 +64,7 @@ CellSchema {
 }
 `;
 
-    assert.deepEqual(DefaultError.formatError(errorObject), formatedMessage);
+    assert.deepEqual(DefaultError.FormatError(errorObject), formatedMessage);
   });
 });
 

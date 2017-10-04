@@ -15,7 +15,7 @@ export class DefaultError {
     return this.message;
   }
 
-  static formatError(err) {
+  static FormatError(err) {
     function formatErrorPart(obj, depth, padBrackets) {
       if (depth === 0 && typeof obj === 'object') {
         return `\n${obj.name} ${formatErrorPart(obj, 1)}`;
@@ -53,6 +53,10 @@ export class DefaultError {
       return '';
     }
     return formatErrorPart(err, 0);
+  }
+
+  static Throw(err) {
+    throw new Error(DefaultError.FormatError(err));
   }
 }
 

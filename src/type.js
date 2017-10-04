@@ -1,39 +1,60 @@
-import * as State from './state';
 import is from './is';
 import { sym } from './utils';
-import { ValidationError, DefaultError } from './error';
+import { ValidationError } from './error';
+
+/**
+ * Type.
+ */
 
 export default class Type {
-  constructor({ name, validate, instance, required, of, defaultValue }) {
+  /**
+   * @param {{
+   *   name: {number} - name of the type validator, will be used for formating errors.
+   *   validate: {function} - validator function takes a value to validate and return
+   *     boolean verdict.
+   *   instance: {Node} - instance of the Quantizer node wich will be used for serialization.
+   *   required: {boolean} - is value need to be required or no.
+   *   nested: {Type|Schema|Node} - nested type of the node, currently supported by List.
+   * }} - params of the type.
+   *
+   * @returns {Type}
+   */
+  constructor({ name, validate, instance, required, nested }) {
     this[sym('type')] = true;
 
     this.name = name;
     this.validate = validate;
     this.instance = instance;
     this.required = required;
-    this.defaultValue = defaultValue;
-    this.of = of;
+    this.nested = nested;
 
-    if (of) {
+    if (nested) {
       this.validate = (value) => {
-        let errors = {
+        const errors = {
           name: this.name,
           count: 0,
           list: [],
         };
 
         if (!validate(value)) {
-          errors = new ValidationError('List', Type.defineType(value));
-
-          return errors;
+          return new ValidationError('List', Type.defineType(value));
         }
 
         for (let i = 0; i < value.length; i += 1) {
-          const validationError = of.validate(value[i]);
+          if (is.node(nested)) {
+            const validationError = nested.schema.validate(value[i]);
 
-          if (validationError.count > 0) {
-            errors.list.push(validationError);
-            errors.count += validationError.count;
+            if (validationError.count > 0) {
+              errors.list.push(validationError);
+              errors.count += validationError.count;
+            }
+          } else {
+            const validationError = nested.validate(value[i]);
+
+            if (validationError.count > 0) {
+              errors.list.push(validationError);
+              errors.count += validationError.count;
+            }
           }
         }
 
@@ -66,25 +87,7 @@ export default class Type {
   parse(value) {
     const TypeInstace = this.instance;
 
-    return new TypeInstace(value, this.of);
-  }
-
-  getDefaultValue() {
-    if (typeof this.defaultValue !== 'undefined') {
-      const err = this.validate(this.defaultValue);
-
-      if (err.count > 0) {
-        return new ValidationError(this.name, Type.defineType(this.defaultValue));
-      }
-
-      return this.parse(this.defaultValue);
-    }
-
-    if (this.required) {
-      return new DefaultError(`${this.name}: Default value is not defined.`);
-    }
-
-    return null;
+    return new TypeInstace(value, this.nested);
   }
 
   static defineType(value) {
@@ -117,50 +120,3 @@ export default class Type {
   }
 }
 
-Type.Any = new Type({
-  name: 'Any',
-  instance: State.Any,
-  validate: () => true,
-});
-
-Type.Boolean = new Type({
-  name: 'Boolean',
-  instance: State.Boolean,
-  validate: is.boolean,
-});
-
-Type.List = new Type({
-  name: 'List',
-  instance: State.List,
-  validate: is.list,
-});
-
-Type.Map = new Type({
-  name: 'Map',
-  instance: State.Map,
-  validate: is.map,
-});
-
-Type.Number = new Type({
-  name: 'Number',
-  instance: State.Number,
-  validate: is.number,
-});
-
-Type.String = new Type({
-  name: 'String',
-  instance: State.String,
-  validate: is.string,
-});
-
-Type.UUID = new Type({
-  name: 'UUID',
-  instance: State.UUID,
-  validate: is.uuid,
-});
-
-Type.ObjectID = new Type({
-  name: 'ObjectID',
-  instance: State.ObjectID,
-  validate: is.object_id,
-});

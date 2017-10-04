@@ -11,16 +11,14 @@ describe('Type', () => {
       instance: PrimitiveNode,
       validate: () => {},
       required: false,
-      defaultValue: 0,
-      of: PrimitiveNode,
+      nested: PrimitiveNode,
     });
 
     assert.isDefined(createdType.name);
     assert.isDefined(createdType.validate);
     assert.isDefined(createdType.instance);
     assert.isDefined(createdType.required);
-    assert.isDefined(createdType.defaultValue);
-    assert.isDefined(createdType.of);
+    assert.isDefined(createdType.nested);
   });
 
   it('serialization', () => {
@@ -28,7 +26,6 @@ describe('Type', () => {
       name: 'TestType',
       instance: PrimitiveNode,
       validate: is.number,
-      defaultValue: 0,
     });
 
     assert.deepEqual(createdType.parse(4), { value: 4 });
@@ -39,7 +36,6 @@ describe('Type', () => {
       name: 'TestType',
       instance: PrimitiveNode,
       validate: is.number,
-      defaultValue: 0,
     });
 
     const err = createdType.validate('str');
@@ -47,28 +43,16 @@ describe('Type', () => {
     assert.deepEqual(err, new ValidationError('TestType', 'String'));
   });
 
-  it('default value', () => {
+  it('validation with nested type', () => {
     const createdType = new Type({
       name: 'TestType',
       instance: PrimitiveNode,
       validate: is.number,
-      defaultValue: 5,
+      nested: Number,
     });
 
-    assert.deepEqual(createdType.getDefaultValue(), { value: 5 });
-  });
+    const err = createdType.validate('str');
 
-
-  it('validation of the default value', () => {
-    const createdType = new Type({
-      name: 'TestType',
-      instance: PrimitiveNode,
-      validate: is.number,
-      defaultValue: 'str',
-    });
-
-    const err = createdType.getDefaultValue();
-
-    assert.deepEqual(err, new ValidationError('TestType', 'String'));
+    assert.deepEqual(err, new ValidationError('List', 'String'));
   });
 });

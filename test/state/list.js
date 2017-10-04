@@ -1,6 +1,6 @@
 import chai, { expect, assert } from 'chai';
 import spiesPlugin from 'chai-spies';
-import { State, Type, Utils } from '../../src';
+import { State, Type, Factory } from '../../src';
 
 chai.use(spiesPlugin);
 
@@ -150,12 +150,14 @@ describe('List', () => {
       list.push({});
       list.push({});
 
+      console.log()
+
       assert.instanceOf(list.at(0), SomeClass);
       assert.instanceOf(list.at(1), SomeClass);
     });
 
     it('from factory', () => {
-      const factory = Utils.factoryCreator((data) => {
+      const factory = new Factory((data) => {
         if (data.type === 'gold') {
           return new State.Map({ color: 'yellow' });
         }

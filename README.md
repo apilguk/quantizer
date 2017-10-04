@@ -98,7 +98,7 @@ Is a core feature wich validate input data, **Type** should know about couple th
 - `name` - name of the type validator, will be used for formating errors.
 - `validator` - validator function takes a value to validate and return boolean verdict.
 - `instance` - instance of the Quantizer node wich will be used for serialization.
-- `of` - inner type of the node, currently supported by List.
+- `nested` - nested type of the node, currently supported by List.
 - `required` - is value need to be required or no.
 
 Type API is just two simple methods:
@@ -135,7 +135,8 @@ type.parse(1)
 
 #### Schema:
 
-Schema helps to describe complex structures.
+Actually, Schema is more variation of Type, it helps to describe complex structures
+
 
 Schema API is just two simple methods like Type does:
 - `validate(value)` - returns errors report.
@@ -176,9 +177,9 @@ A few variations of using Schema:
 ````js
 import { State, Schema } from 'quantizer';
 
-const userSchema new Schema('User', {
+const userSchema = new Schema('User', {
 	id: Type.Number,
-    name: Type.String
+  name: Type.String
 });
 
 // just type validation

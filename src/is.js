@@ -2,22 +2,22 @@ import { sym } from './utils';
 
 const is = {
   _null: value => value === null,
-  _undefined: value => value === undefined,
-  func: value => typeof value === 'function',
-  promise: value => value && typeof value.then === 'function',
-  list: value => Array.isArray(value),
-  number: value => typeof value === 'number',
-  boolean: value => typeof value === 'boolean',
-  string: value => typeof value === 'string',
-  map: value => !(value === null) && !Array.isArray(value) && (typeof value === 'object'),
-  factory: value => value[sym('factory')],
-  node: value => !!value[sym('node')],
-  schema: value => !!value[sym('schema')],
-  sym: value => is.string(value) && (/\[\[(\w+)\]\]/g).test(value), /* eslint no-useless-escape: 1 */
-  type: value => !!value[sym('type')],
-  uuid: value => is.sym(value) || is.string(value) || is.number(value),
-  object_id: value => is.sym(value) || is.string(value) || is.number(value),
-  error: value => !!value[sym('error')],
+  _undefined: value => typeof value === 'undefined',
+  func: value => (typeof value !== 'undefined') && typeof value === 'function',
+  promise: value => (typeof value !== 'undefined') && typeof value.then === 'function',
+  list: value => (typeof value !== 'undefined') && Array.isArray(value),
+  number: value => (typeof value !== 'undefined') && typeof value === 'number',
+  boolean: value => (typeof value !== 'undefined') && typeof value === 'boolean',
+  string: value => (typeof value !== 'undefined') && typeof value === 'string',
+  map: value => (typeof value !== 'undefined') && !(value === null) && !Array.isArray(value) && (typeof value === 'object'),
+  factory: value => (typeof value !== 'undefined') && value[sym('factory')],
+  node: value => (typeof value !== 'undefined') && !!value[sym('node')],
+  schema: value => (typeof value !== 'undefined') && !!value[sym('schema')],
+  sym: value => (typeof value !== 'undefined') && is.string(value) && (/\[\[(\w+)\]\]/g).test(value), /* eslint no-useless-escape: 1 */
+  type: value => (typeof value !== 'undefined') && !!value[sym('type')],
+  uuid: value => (typeof value !== 'undefined') && (is.string(value)), // needs a true validation
+  object_id: value => (typeof value !== 'undefined') && is.string(value), // needs a true validation
+  error: value => (typeof value !== 'undefined') && !!value[sym('error')],
 };
 
 export default is;

@@ -1,6 +1,5 @@
 import TypedNode from '../node';
 import { keyedIterator, getSourceValue } from '../utils';
-import { DefaultError } from '../error';
 import DefaultNodesFactory from './default_factory';
 
 export default class Map extends TypedNode {
@@ -10,6 +9,10 @@ export default class Map extends TypedNode {
     this.attributes = {};
     this.keys = [];
     this.schema = schema;
+
+    if (this.constructor.schema) {
+      this.schema = this.constructor.schema;
+    }
 
     if (value !== undefined) {
       this.set(value);
@@ -60,7 +63,6 @@ export default class Map extends TypedNode {
       const validationErr = this.schema.validate(source);
 
       if (validationErr.count > 0) {
-        // throw DefaultError.formatError(validationErr);
         throw validationErr;
       }
     }

@@ -1,4 +1,4 @@
-import { factoryCreator } from '../utils';
+import Factory from '../factory';
 import Type from '../type';
 import TypedNode from '../node';
 import Boolean from './boolean';
@@ -7,7 +7,7 @@ import String from './string';
 import List from './list';
 import Map from './map';
 
-export default factoryCreator((value) => {
+export default new Factory((value) => {
   if (value instanceof TypedNode) {
     return value;
   }

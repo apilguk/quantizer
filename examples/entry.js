@@ -32,21 +32,19 @@ const UserSchema = new Schema('UserSchema', {
   messages: [MessageSchema],
 });
 
-window.schema = new Schema('CellSchema', {
+const schema = new Schema('CellSchema', {
   id: Type.String,
   profile: UserSchema,
 });
 
 
 class CellInst extends State.Map {
-  static schema = window.schema;
+  static schema = schema;
 
   constructor() {
-    super({ list: [] }, window.schema);
-
-    // cellInst.validate = window.schema.validate.bind(window.schema)
+    super({ list: [] });
   }
-};
+}
 
 const cell = new CellInst({});
 
@@ -57,3 +55,5 @@ const listFromModel = new Schema('ListOf', {
 });
 
 window.listFromModel = listFromModel;
+window.cell = cell;
+window.schema = schema;
