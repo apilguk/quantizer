@@ -1464,7 +1464,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	            });
 	          }
 	        } else if (_is2.default.node(input)) {
-	          // throw new Error('Using type as instance currently unsupported.');
 	          this.fields[key] = new _type2.default({
 	            name: input.name || key,
 	            instance: input,
