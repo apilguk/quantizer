@@ -605,5 +605,55 @@ describe('Schema', () => {
         name: 'CellSchema',
       });
     });
+
+    it('deep validate with type', () => {
+      const schema = new Schema('TestSchema', {
+        a: Type.String,
+        b: Type.Number,
+      });
+      const createdType = new Type({
+        name: 'TestType',
+        instance: Num,
+        validate: schema,
+      });
+      const schema2 = new Schema('Schema', {
+        a: [createdType],
+      });
+
+      assert.deepEqual(
+        schema2.validate({ a: [{ a: 2, b: 'asdad' }, { a: 2, b: 2 }] }),
+        {
+          count: 3,
+          map: {
+            a: {
+              count: 3,
+              list: [
+                {
+                  count: 2,
+                  map: {
+                    a: new ValidationError('String', 'Number'),
+                    b: new ValidationError('Number', 'String'),
+                  },
+                  name: 'TestType',
+                },
+                {
+                  count: 1,
+                  map: {
+                    a: new ValidationError('String', 'Number'),
+                    b: {
+                      count: 0,
+                      name: 'Number',
+                    },
+                  },
+                  name: 'TestType',
+                },
+              ],
+              name: 'TestType',
+            },
+          },
+          name: 'Schema',
+        },
+      );
+    });
   });
 });

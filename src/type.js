@@ -23,7 +23,6 @@ export default class Type {
     this[sym('type')] = true;
 
     this.name = name;
-    this.validate = validate;
     this.instance = instance;
     this.required = required;
     this.nested = nested;
@@ -67,7 +66,11 @@ export default class Type {
           count: 0,
         };
 
-        if (!validate(value)) {
+        if (validate && is.schema(validate)) {
+          const validationErrors = validate.validate(value);
+          errors.count = validationErrors.count;
+          errors.map = validationErrors.map;
+        } else if (!validate(value)) {
           errors = new ValidationError(this.name, Type.defineType(value));
 
           return errors;
