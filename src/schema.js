@@ -9,22 +9,25 @@ export default class Schema {
   constructor(name = 'Unnamed', fileds, strict = false) {
     this[sym('schema')] = true;
 
+    if (!name) {
+      throw new Error('Schema: Missed name.');
+    }
+
     this.name = name;
     this.fields = {};
     this.strict = strict;
 
-    if (fileds) {
-      this.initTypes(fileds);
-    }
+    Schema.ValidateSchema(fileds);
+    this.init(fileds);
   }
 
   setProps(props) {
     Object.assign(this, props);
   }
 
-  initTypes(types) {
-    for (const key in types) {
-      const input = types[key];
+  init(fields) {
+    for (const key in fields) {
+      const input = fields[key];
 
       if (is.type(input) || is.schema(input)) {
         this.fields[key] = input;
@@ -75,7 +78,7 @@ export default class Schema {
     };
 
     if (!is.map(obj)) {
-      errors = new ValidationError('Map', Type.defineType(obj));
+      errors = new ValidationError('Map', Type.DefineType(obj));
 
       return errors;
     }
@@ -150,7 +153,23 @@ export default class Schema {
     return new Map(value, this);
   }
 
-  find(key) {
-    return this.attributes[key];
+  static ValidateSchema(fields) {
+    if (!fields) {
+      throw new Error('Schema: Fields declaration udefined.');
+    }
+
+    for (const key in fields) {
+      const input = fields[key];
+
+      if (
+        !is.map(input) &&
+        !is.list(input) &&
+        !is.schema(input) &&
+        !is.type(input)
+      ) {
+        throw new Error('Schema: Unsupported type of field.');
+      }
+
+    }
   }
 }

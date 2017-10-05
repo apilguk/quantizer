@@ -1,21 +1,19 @@
 import { assert } from 'chai';
-import { is, Type } from '../src';
+import { is, Type, State } from '../src';
 import { ValidationError } from '../src/error';
-
-const PrimitiveNode = value => ({ value });
 
 describe('Type', () => {
   it('constructor', () => {
     const createdType = new Type({
       name: 'TestType',
-      instance: PrimitiveNode,
-      validate: () => {},
+      instance: State.List,
+      validate: is.list,
       required: false,
-      nested: PrimitiveNode,
+      nested: Type.String,
     });
 
     assert.isDefined(createdType.name);
-    assert.isDefined(createdType.validate);
+    assert.isDefined(createdType.validationFunction);
     assert.isDefined(createdType.instance);
     assert.isDefined(createdType.required);
     assert.isDefined(createdType.nested);
@@ -24,17 +22,17 @@ describe('Type', () => {
   it('serialization', () => {
     const createdType = new Type({
       name: 'TestType',
-      instance: PrimitiveNode,
+      instance: State.Number,
       validate: is.number,
     });
 
-    assert.deepEqual(createdType.parse(4), { value: 4 });
+    assert.deepEqual(createdType.parse(4), new State.Number(4));
   });
 
   it('validation', () => {
     const createdType = new Type({
       name: 'TestType',
-      instance: PrimitiveNode,
+      instance: State.Number,
       validate: is.number,
     });
 
@@ -46,9 +44,9 @@ describe('Type', () => {
   it('validation with nested type', () => {
     const createdType = new Type({
       name: 'TestType',
-      instance: PrimitiveNode,
+      instance: State.List,
       validate: is.number,
-      nested: Number,
+      nested: Type.String,
     });
 
     const err = createdType.validate('str');

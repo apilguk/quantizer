@@ -1,11 +1,11 @@
 import * as Utils from './utils';
+import * as State from './state';
 import Factory from './factory';
-import TypedNode from './node';
 import Type from './type';
 import Schema from './schema';
-import is from './is';
+import TypedNode from './node';
 import DefaultFactory from './state/default_factory';
-import * as State from './state';
+import is from './is';
 import './types_build_in';
 
 export {
@@ -14,8 +14,8 @@ export {
   TypedNode,
   Type,
   Schema,
-  is,
   State,
+  is,
 };
 
 export default value => DefaultFactory.get(value);

@@ -43,10 +43,14 @@ describe('is', () => {
     expect(is.map(MAP)).to.be.true;
   });
   it('schema', () => {
-    expect(is.schema(new Schema())).to.be.true;
+    expect(is.schema(new Schema('name', {}))).to.be.true;
   });
   it('type', () => {
-    expect(is.type(new Type({ name: 's' }))).to.be.true;
+    expect(is.type(new Type({
+      name: 's',
+      validate: () => (true),
+      instance: () => (true),
+    }))).to.be.true;
   });
   it('node', () => {
     expect(is.node(new NODE())).to.be.true;

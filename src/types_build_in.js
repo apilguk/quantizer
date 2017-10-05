@@ -1,11 +1,12 @@
 import * as State from './state';
+
 import Type from './type';
 import is from './is';
 
 Type.Any = new Type({
   name: 'Any',
   instance: State.Any,
-  validate: () => true,
+  validate: () => (true),
 });
 
 Type.Boolean = new Type({

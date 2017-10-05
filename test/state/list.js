@@ -150,8 +150,6 @@ describe('List', () => {
       list.push({});
       list.push({});
 
-      console.log()
-
       assert.instanceOf(list.at(0), SomeClass);
       assert.instanceOf(list.at(1), SomeClass);
     });

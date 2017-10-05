@@ -7,6 +7,7 @@ import Map from './map';
 import ObjectID from './object_id';
 import UUID from './uuid';
 
+export DefaultNodesFactory from './default_factory';
 export {
   Any,
   Boolean,

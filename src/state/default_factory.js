@@ -12,7 +12,7 @@ export default new Factory((value) => {
     return value;
   }
 
-  switch (Type.defineType(value)) {
+  switch (Type.DefineType(value)) {
     case 'Map':
       return new Map(value);
     case 'List':

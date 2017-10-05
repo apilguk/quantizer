@@ -1,9 +1,10 @@
 import TypedNode from '../node';
 import { keyedIterator, getSourceValue } from '../utils';
 import DefaultNodesFactory from './default_factory';
+import { DefaultError } from '../error';
 
 export default class Map extends TypedNode {
-  constructor(value, schema = false) {
+  constructor(value = {}, schema = false) {
     super();
 
     this.attributes = {};
@@ -63,7 +64,7 @@ export default class Map extends TypedNode {
       const validationErr = this.schema.validate(source);
 
       if (validationErr.count > 0) {
-        throw validationErr;
+        throw DefaultError.FormatError(validationErr);
       }
     }
 
