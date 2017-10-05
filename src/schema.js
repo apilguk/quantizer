@@ -169,7 +169,6 @@ export default class Schema {
       ) {
         throw new Error('Schema: Unsupported type of field.');
       }
-
     }
   }
 }
