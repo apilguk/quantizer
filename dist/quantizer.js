@@ -1613,7 +1613,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      for (var key in fields) {
 	        var input = fields[key];
 
-	        if (!_is2.default.map(input) && !_is2.default.list(input) && !_is2.default.schema(input) && !_is2.default.type(input)) {
+	        if (!_is2.default.map(input) && !_is2.default.list(input) && !_is2.default.schema(input) && !_is2.default.type(input) && !_is2.default.func(input)) {
 	          throw new Error('Schema: Unsupported type of field.');
 	        }
 	      }

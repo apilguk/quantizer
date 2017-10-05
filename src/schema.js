@@ -165,7 +165,8 @@ export default class Schema {
         !is.map(input) &&
         !is.list(input) &&
         !is.schema(input) &&
-        !is.type(input)
+        !is.type(input) &&
+        !is.func(input)
       ) {
         throw new Error('Schema: Unsupported type of field.');
       }

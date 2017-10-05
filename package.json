@@ -1,6 +1,6 @@
 {
   "name": "quantizer",
-  "version": "2.2.1",
+  "version": "2.2.3",
   "description": "State Management System",
   "main": "./dist/quantizer",
   "scripts": {
