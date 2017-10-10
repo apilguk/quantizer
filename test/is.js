@@ -70,4 +70,7 @@ describe('is', () => {
   it('object_id', () => {
     expect(is.object_id(ObjectID)).to.be.true;
   });
+  it('object_id invalid', () => {
+    expect(is.object_id('ididid')).to.be.false;
+  });
 });

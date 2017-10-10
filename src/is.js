@@ -13,10 +13,10 @@ const is = {
   factory: value => (typeof value !== 'undefined') && value[sym('factory')],
   node: value => (typeof value !== 'undefined') && !!value[sym('node')],
   schema: value => (typeof value !== 'undefined') && !!value[sym('schema')],
-  sym: value => (typeof value !== 'undefined') && is.string(value) && (/\[\[(\w+)\]\]/g).test(value), /* eslint no-useless-escape: 1 */
+  sym: value => (typeof value !== 'undefined') && is.string(value) && (/\[\[(\w+)]]/g).test(value),
   type: value => (typeof value !== 'undefined') && !!value[sym('type')],
   uuid: value => (typeof value !== 'undefined') && (is.string(value)), // needs a true validation
-  object_id: value => (typeof value !== 'undefined') && is.string(value), // needs a true validation
+  object_id: value => (typeof value !== 'undefined') && typeof value === 'string' && /^[a-f0-9]{24}$/.test(value),
   error: value => (typeof value !== 'undefined') && !!value[sym('error')],
 };
 
