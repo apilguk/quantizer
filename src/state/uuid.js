@@ -11,6 +11,6 @@ export default class UUID extends TypedNode {
       this.value = value;
     }
 
-    printDeprecationWarning('Using of built-in UUID is deprecated. UUID Type and State will be removed soon.');
+    printDeprecationWarning('Usage of built-in UUID is deprecated. UUID Type and State will be removed soon.');
   }
 }
