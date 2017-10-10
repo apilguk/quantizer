@@ -6,17 +6,6 @@ function tab(depth) {
 
 const printedWarnings = [];
 
-/**
- * @param {DeprecationWarning} warning
- */
-export function printDeprecationWarning(warning) {
-  const message = warning.formatMessage();
-  if (printedWarnings.indexOf(message) === -1) {
-    printedWarnings.push(message);
-    console.warn(`QUANTIZER DEPRECATION WARNING️: ${message}`);
-  }
-}
-
 
 export class DefaultError {
   constructor(message) {
@@ -31,12 +20,12 @@ export class DefaultError {
 
   static FormatError(err) {
     function formatErrorPart(obj, depth, padBrackets) {
-      if (depth === 0 && typeof obj === 'object') {
-        return `\n${obj.name} ${formatErrorPart(obj, 1)}`;
-      }
-
       if (obj instanceof DefaultError) {
         return `'${obj.formatMessage().slice(0, -1)}'\n`;
+      }
+
+      if (depth === 0 && typeof obj === 'object') {
+        return `\n${obj.name} ${formatErrorPart(obj, 1)}`;
       }
 
       if (typeof obj === 'object' && obj.list) {
@@ -113,5 +102,12 @@ export class DeprecationWarning extends DefaultError {
     super(`Usage of ${feature} is deprecated. This feature will be removed soon.\n`);
 
     this.feature = feature;
+  }
+
+  static FormatError(feature) {
+    if (printedWarnings.indexOf(feature) === -1) {
+      printedWarnings.push(feature);
+      console.warn(`Usage of ${feature} is deprecated. This feature will be removed soon.\n`);
+    }
   }
 }

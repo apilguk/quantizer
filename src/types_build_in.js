@@ -2,6 +2,7 @@ import * as State from './state';
 
 import Type from './type';
 import is from './is';
+import { DeprecationWarning } from './error';
 
 Type.Any = new Type({
   name: 'Any',
@@ -39,10 +40,19 @@ Type.String = new Type({
   validate: is.string,
 });
 
-Type.UUID = new Type({
+const UUID = new Type({
   name: 'UUID',
   instance: State.UUID,
   validate: is.uuid,
+});
+
+Object.defineProperty(Type, 'UUID', {
+  get: () => {
+    DeprecationWarning.FormatError('built-in UUID Type');
+    return UUID;
+  },
+  enumerable: false,
+  configurable: false,
 });
 
 Type.ObjectID = new Type({

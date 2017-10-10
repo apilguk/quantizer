@@ -6,7 +6,7 @@ import { sym } from './utils';
 import { ValidationError, RequirementError, UndeclaredError } from './error';
 
 export default class Schema {
-  constructor(name = 'Unnamed', fileds, strict = false) {
+  constructor(name = 'Unnamed', fields, strict = false) {
     this[sym('schema')] = true;
 
     if (!name) {
@@ -17,8 +17,8 @@ export default class Schema {
     this.fields = {};
     this.strict = strict;
 
-    Schema.ValidateSchema(fileds);
-    this.init(fileds);
+    Schema.ValidateSchema(fields);
+    this.init(fields);
   }
 
   setProps(props) {
@@ -155,7 +155,7 @@ export default class Schema {
 
   static ValidateSchema(fields) {
     if (!fields) {
-      throw new Error('Schema: Fields declaration udefined.');
+      throw new Error('Schema: Fields declaration undefined.');
     }
 
     for (const key in fields) {
