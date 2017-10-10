@@ -1,5 +1,6 @@
 import TypedNode from '../node';
-import { sym, uuid, printDeprecationWarning } from '../utils';
+import { sym, uuid } from '../utils';
+import { printDeprecationWarning, DeprecationWarning } from '../error';
 
 export default class UUID extends TypedNode {
   constructor(value) {
@@ -11,6 +12,6 @@ export default class UUID extends TypedNode {
       this.value = value;
     }
 
-    printDeprecationWarning('Usage of built-in UUID is deprecated. UUID Type and State will be removed soon.');
+    printDeprecationWarning(new DeprecationWarning('built-in UUID'));
   }
 }

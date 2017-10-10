@@ -48,12 +48,3 @@ export function uuid() {
   });
   return value;
 }
-
-const printedWarnings = [];
-
-export function printDeprecationWarning(message) {
-  if (printedWarnings.indexOf(message) === -1) {
-    printedWarnings.push(message);
-    console.warn(`QUANTIZER DEPRECATION WARNING️: ${message}`);
-  }
-}
