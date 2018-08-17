@@ -105,7 +105,7 @@ describe('Map', () => {
     assert.deepEqual(map.find('x').get(), {});
   });
 
-  it.only('set map with Null value', () => {
+  it('set map with Null value', () => {
     const map = new State.Map({ x: null });
 
     assert.deepEqual(map.get(), { x: null });
