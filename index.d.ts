@@ -5,8 +5,8 @@ export class TypedNode<T> {
 
 export module State {
   export class Map<T> extends TypedNode<T> {
-    public get(...args: string[]): T;
-    public set(a: T | string, b?: any): void;
+    public get(...args: (keyof T)[]): any;
+    public set(a: T | keyof T, b?: any): void;
     public merge(a: T | string, b?: any): void;
     public setAttribute(a: string, b?: any): void;
     public getAttribute(a: string): any;
@@ -19,7 +19,7 @@ export module State {
 
   export class List<T> extends TypedNode<T> {
     public set(source: T | any): any;
-    public get(...agrs: any[]): T;
+    public get(...args: (keyof T)[]): any;
     public clear(): void;
     public concat(source: any[]): void;
     public push(element: T): void;
@@ -31,12 +31,12 @@ export module State {
     public remove(toRemove: any): void;
   }
 
-  export class Boolean extends TypedNode<boolean> {}
-  export class String extends TypedNode<string> {}
-  export class Number extends TypedNode<number> {}
-  export class ObjectID extends TypedNode<string> {}
-  export class UUID extends TypedNode<string> {}
-  export class Any extends TypedNode<any> {}
+  export class Boolean extends TypedNode<boolean> { }
+  export class String extends TypedNode<string> { }
+  export class Number extends TypedNode<number> { }
+  export class ObjectID extends TypedNode<string> { }
+  export class UUID extends TypedNode<string> { }
+  export class Any extends TypedNode<any> { }
 }
 
 export class Schema {
