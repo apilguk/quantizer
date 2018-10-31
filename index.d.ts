@@ -4,7 +4,7 @@ export class TypedNode<T> {
 }
 
 export module State {
-  export class Map<T> {
+  export class Map<T = {}> {
     public get(): T;
     public get<K extends keyof T>(key: K): T[K];
     public get<K extends keyof T>(...args: K[]): Pick<T, K>;
@@ -20,7 +20,7 @@ export module State {
     public fromJSON(str: string): this;
   }
 
-  export class List<T> {
+  export class List<T = {}, K = {}> {
     public set(source: Partial<T>): void;
     public get(): T[];
     public get<K extends keyof T>(key: K): T[K][];
@@ -33,15 +33,15 @@ export module State {
     public where<K extends keyof T>(key: K, value: T[K]): T | undefined;
     public filter(index: number): T[];
     public sortBy<K extends keyof T>(key: K): this;
-    public remove(toRemove: this): void;
+    public remove(toRemove: any): void;
   }
 
-  export class Boolean extends TypedNode<boolean> {}
-  export class String extends TypedNode<string> {}
-  export class Number extends TypedNode<number> {}
-  export class ObjectID extends TypedNode<string> {}
-  export class UUID extends TypedNode<string> {}
-  export class Any extends TypedNode<any> {}
+  export class Boolean extends TypedNode<boolean> { }
+  export class String extends TypedNode<string> { }
+  export class Number extends TypedNode<number> { }
+  export class ObjectID extends TypedNode<string> { }
+  export class UUID extends TypedNode<string> { }
+  export class Any extends TypedNode<any> { }
 }
 
 export class Schema {
@@ -58,5 +58,3 @@ export class Type {
   static UUID: Type;
   static ObjectID: Type;
 }
-
-
