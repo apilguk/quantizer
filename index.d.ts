@@ -20,7 +20,7 @@ export module State {
     public fromJSON(str: string): this;
   }
 
-  export class List<T = {}, K = {}> {
+  export class List<T = {}> {
     public set(source: Partial<T>): void;
     public get(): T[];
     public get<K extends keyof T>(key: K): T[K][];
