@@ -58,3 +58,8 @@ export class Type {
   static UUID: Type;
   static ObjectID: Type;
 }
+
+export class Factory<I, O> {
+  constructor(factory: (I) => O);
+  get(data: I): O;
+}
