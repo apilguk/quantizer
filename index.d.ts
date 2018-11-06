@@ -90,4 +90,3 @@ export class Factory<I, O> {
   constructor(factory: (data: I) => O);
   get(data: I): O;
 }
-
