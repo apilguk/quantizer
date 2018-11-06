@@ -29,7 +29,14 @@ export default class Schema {
     for (const key in fields) {
       const input = fields[key];
 
-      if (is.type(input) || is.schema(input)) {
+      if (is.factory(input)) {
+        this.fields[key] = new Type({
+          name: key,
+          instance: List,
+          validate: () => true,
+          nested: input,
+        });
+      } else if (is.type(input) || is.schema(input)) {
         this.fields[key] = input;
       } else if (is.map(input)) {
         this.fields[key] = new Schema(key, input);
@@ -165,6 +172,7 @@ export default class Schema {
         !is.map(input) &&
         !is.list(input) &&
         !is.schema(input) &&
+        !is.factory(input) &&
         !is.type(input) &&
         !is.func(input)
       ) {
