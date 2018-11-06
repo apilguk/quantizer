@@ -29,7 +29,7 @@ export default class Schema {
     for (const key in fields) {
       const input = fields[key];
 
-       if (is.factory(input)) {
+      if (is.factory(input)) {
         this.fields[key] = new Type({
           name: key,
           instance: List,
