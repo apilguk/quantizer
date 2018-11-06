@@ -68,7 +68,7 @@ export class Type {
   static ObjectID: Type;
 }
 
-export interface is {
+export const is: {
   func: Validator;
   promise: Validator;
   list: Validator;
@@ -84,11 +84,9 @@ export interface is {
   uuid: Validator;
   object_id: Validator;
   error: Validator;
-}
-
-export const is: is;
+};
 
 export class Factory<I, O> {
-  constructor(factory: (arg: I) => O);
+  constructor(factory: (data: I) => O);
   get(data: I): O;
 }
