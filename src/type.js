@@ -53,6 +53,8 @@ export default class Type {
       }
 
       for (let i = 0; i < value.length; i += 1) {
+        if (is.factory(this.nested)) break;
+
         if (is.node(this.nested)) {
           const validationError = this.nested.schema.validate(value[i]);
 
@@ -121,9 +123,10 @@ export default class Type {
       params.nested &&
       (!is.func(params.nested) &&
       !is.schema(params.nested) &&
+      !is.factory(params.nested) &&
       !is.type(params.nested))
     ) {
-      throw new Error('Type: Unsupported nested instance it should be constructor, schema or another type.');
+      throw new Error('Type: Unsupported nested instance it should be constructor, schema, factory or another type.');
     }
 
     if (
