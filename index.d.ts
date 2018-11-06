@@ -4,7 +4,7 @@ export class TypedNode<T> {
 }
 
 export module State {
-  export class Map<T = {}> {
+  export class Map<T = {}> extends TypedNode<T> {
     public get(): T;
     public get<K extends keyof T>(key: K): T[K];
     public get<K extends keyof T>(...args: K[]): Pick<T, K>;
@@ -20,8 +20,8 @@ export module State {
     public fromJSON(str: string): this;
   }
 
-  export class List<T = {}> {
-    public set(source: Partial<T>): void;
+  export class List<T = {}> extends TypedNode<T[]> {
+    public set(source: Partial<T>[]): void;
     public get(): T[];
     public get<K extends keyof T>(key: K): T[K][];
     public get<K extends keyof T>(...args: K[]): Pick<T, K>[];
@@ -48,7 +48,16 @@ export class Schema {
   constructor(name: string, fields: object, strict?: boolean);
 }
 
+export type Validator = (value: any) => boolean;
+
 export class Type {
+  constructor(param: {
+    name: string;
+    instance: new () => TypedNode<any>;
+    validate: Validator;
+    required?: boolean;
+    nested?: new () => Schema | Type | TypedNode<any>;
+  })
   static Any: Type;
   static Boolean: Type;
   static List: Type;
@@ -57,4 +66,29 @@ export class Type {
   static String: Type;
   static UUID: Type;
   static ObjectID: Type;
+}
+
+export interface is {
+  func: Validator;
+  promise: Validator;
+  list: Validator;
+  number: Validator;
+  boolean: Validator;
+  string: Validator;
+  map: Validator;
+  factory: Validator;
+  node: Validator;
+  schema: Validator;
+  sym: Validator;
+  type: Validator;
+  uuid: Validator;
+  object_id: Validator;
+  error: Validator;
+}
+
+export const is: is;
+
+export class Factory<I, O> {
+  constructor(factory: (arg: I) => O);
+  get(data: I): O;
 }
