@@ -396,6 +396,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        for (var i = 0; i < value.length; i += 1) {
+	          if (_is2.default.factory(this.nested)) break;
+
 	          if (_is2.default.node(this.nested)) {
 	            var validationError = this.nested.schema.validate(value[i]);
 
@@ -462,8 +464,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        throw new Error('Type: Required is not a boolean.');
 	      }
 
-	      if (params.nested && !_is2.default.func(params.nested) && !_is2.default.schema(params.nested) && !_is2.default.type(params.nested)) {
-	        throw new Error('Type: Unsupported nested instance it should be constructor, schema or another type.');
+	      if (params.nested && !_is2.default.func(params.nested) && !_is2.default.schema(params.nested) && !_is2.default.factory(params.nested) && !_is2.default.type(params.nested)) {
+	        throw new Error('Type: Unsupported nested instance it should be constructor, schema, factory or another type.');
 	      }
 
 	      if (params.nested && _is2.default.node(params.nested) && typeof params.nested.schema === 'undefined') {
@@ -1486,7 +1488,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	      for (var key in fields) {
 	        var input = fields[key];
 
-	        if (_is2.default.type(input) || _is2.default.schema(input)) {
+	        if (_is2.default.factory(input)) {
+	          this.fields[key] = new _type2.default({
+	            name: key,
+	            instance: _state.List,
+	            validate: function validate() {
+	              return true;
+	            },
+	            nested: input
+	          });
+	        } else if (_is2.default.type(input) || _is2.default.schema(input)) {
 	          this.fields[key] = input;
 	        } else if (_is2.default.map(input)) {
 	          this.fields[key] = new Schema(key, input);
@@ -1619,7 +1630,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      for (var key in fields) {
 	        var input = fields[key];
 
-	        if (!_is2.default.map(input) && !_is2.default.list(input) && !_is2.default.schema(input) && !_is2.default.type(input) && !_is2.default.func(input)) {
+	        if (!_is2.default.map(input) && !_is2.default.list(input) && !_is2.default.schema(input) && !_is2.default.factory(input) && !_is2.default.type(input) && !_is2.default.func(input)) {
 	          throw new Error('Schema: Unsupported type of field.');
 	        }
 	      }
