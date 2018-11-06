@@ -20,7 +20,7 @@ export module State {
     public fromJSON(str: string): this;
   }
 
-  export class List<T = {}> extends TypedNode<T[]> {
+  export class List<T, R> extends TypedNode<T[]> {
     public set(source: Partial<T>[]): void;
     public get(): T[];
     public get<K extends keyof T>(key: K): T[K][];
@@ -29,9 +29,9 @@ export module State {
     public concat(source: T[]): void;
     public push(element: T): void;
     public map(handler: (value: T, index?: string) => any): T[];
-    public at(index: number): T | undefined;
-    public where<K extends keyof T>(key: K, value: T[K]): T | undefined;
-    public filter(index: number): T[];
+    public at(index: number): R | undefined;
+    public where<K extends keyof T>(key: K, value: T[K]): R | undefined;
+    public filter(index: number): R[];
     public sortBy<K extends keyof T>(key: K): this;
     public remove(toRemove: any): void;
   }
@@ -90,3 +90,4 @@ export class Factory<I, O> {
   constructor(factory: (data: I) => O);
   get(data: I): O;
 }
+
