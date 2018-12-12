@@ -54,7 +54,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(14);
+	module.exports = __webpack_require__(15);
 
 
 /***/ }),
@@ -265,15 +265,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _boolean2 = _interopRequireDefault(_boolean);
 
-	var _number = __webpack_require__(12);
+	var _number = __webpack_require__(13);
 
 	var _number2 = _interopRequireDefault(_number);
 
-	var _string = __webpack_require__(13);
+	var _string = __webpack_require__(14);
 
 	var _string2 = _interopRequireDefault(_string);
 
-	var _null = __webpack_require__(17);
+	var _null = __webpack_require__(12);
 
 	var _null2 = _interopRequireDefault(_null);
 
@@ -391,7 +391,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (this.nested) {
 	        errors.list = [];
 
-	        if (!this.validationFunction(value)) {
+	        if (!this.validationFunction(value) && !_is2.default._null(value)) {
 	          return new _error.ValidationError('List', Type.DefineType(value));
 	        }
 
@@ -418,7 +418,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return errors;
 	      }
 
-	      if (!this.validationFunction(value)) {
+	      if (!this.validationFunction(value) && !_is2.default._null(value)) {
 	        errors = new _error.ValidationError(this.name, Type.DefineType(value));
 
 	        return errors;
@@ -657,9 +657,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.UUID = exports.ObjectID = exports.List = exports.Map = exports.String = exports.Number = exports.Boolean = exports.Any = exports.DefaultNodesFactory = undefined;
+	exports.UUID = exports.Null = exports.ObjectID = exports.List = exports.Map = exports.String = exports.Number = exports.Boolean = exports.Any = exports.DefaultNodesFactory = undefined;
 
-	var _any = __webpack_require__(16);
+	var _any = __webpack_require__(17);
 
 	var _any2 = _interopRequireDefault(_any);
 
@@ -667,11 +667,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _boolean2 = _interopRequireDefault(_boolean);
 
-	var _number = __webpack_require__(12);
+	var _number = __webpack_require__(13);
 
 	var _number2 = _interopRequireDefault(_number);
 
-	var _string = __webpack_require__(13);
+	var _string = __webpack_require__(14);
 
 	var _string2 = _interopRequireDefault(_string);
 
@@ -682,6 +682,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _map = __webpack_require__(11);
 
 	var _map2 = _interopRequireDefault(_map);
+
+	var _null = __webpack_require__(12);
+
+	var _null2 = _interopRequireDefault(_null);
 
 	var _object_id = __webpack_require__(18);
 
@@ -705,6 +709,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.Map = _map2.default;
 	exports.List = _list2.default;
 	exports.ObjectID = _object_id2.default;
+	exports.Null = _null2.default;
 	exports.UUID = _uuid2.default;
 
 /***/ }),
@@ -1278,6 +1283,45 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 
+	var _node = __webpack_require__(1);
+
+	var _node2 = _interopRequireDefault(_node);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Null = function (_TypedNode) {
+	  _inherits(Null, _TypedNode);
+
+	  function Null() {
+	    _classCallCheck(this, Null);
+
+	    var _this = _possibleConstructorReturn(this, (Null.__proto__ || Object.getPrototypeOf(Null)).call(this));
+
+	    _this.value = null;
+	    return _this;
+	  }
+
+	  return Null;
+	}(_node2.default);
+
+	exports.default = Null;
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _node = __webpack_require__(1);
@@ -1322,7 +1366,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = Number;
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1361,7 +1405,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = String;
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1387,7 +1431,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _type2 = _interopRequireDefault(_type);
 
-	var _schema = __webpack_require__(15);
+	var _schema = __webpack_require__(16);
 
 	var _schema2 = _interopRequireDefault(_schema);
 
@@ -1422,7 +1466,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1538,13 +1582,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'validate',
 	    value: function validate(obj) {
-	      var objKeys = Object.keys(obj);
-	      var fieldsKeys = Object.keys(this.fields);
 	      var errors = {
 	        name: this.name,
 	        count: 0,
 	        map: {}
 	      };
+
+	      if (_is2.default._null(obj)) {
+	        return errors;
+	      }
+
+	      var objKeys = Object.keys(obj);
+	      var fieldsKeys = Object.keys(this.fields);
 
 	      if (!_is2.default.map(obj)) {
 	        errors = new _error.ValidationError('Map', _type2.default.DefineType(obj));
@@ -1590,6 +1639,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'serialize',
 	    value: function serialize(obj) {
+	      if (_is2.default._null(obj)) {
+	        return new _state.Null();
+	      }
 	      var result = {};
 
 	      for (var key in obj) {
@@ -1618,13 +1670,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'parse',
 	    value: function parse(value) {
+	      if (_is2.default._null(value)) {
+	        return new _state.Null();
+	      }
 	      return new _state.Map(value, this);
 	    }
 	  }], [{
 	    key: 'ValidateSchema',
 	    value: function ValidateSchema(fields) {
 	      if (!fields) {
-	        throw new Error('Schema: Fields declaration udefined.');
+	        throw new Error('Schema: Fields declaration undefined.');
 	      }
 
 	      for (var key in fields) {
@@ -1643,7 +1698,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = Schema;
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1680,45 +1735,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	}(_node2.default);
 
 	exports.default = Any;
-
-/***/ }),
-/* 17 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _node = __webpack_require__(1);
-
-	var _node2 = _interopRequireDefault(_node);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var Null = function (_TypedNode) {
-	  _inherits(Null, _TypedNode);
-
-	  function Null() {
-	    _classCallCheck(this, Null);
-
-	    var _this = _possibleConstructorReturn(this, (Null.__proto__ || Object.getPrototypeOf(Null)).call(this));
-
-	    _this.value = null;
-	    return _this;
-	  }
-
-	  return Null;
-	}(_node2.default);
-
-	exports.default = Null;
 
 /***/ }),
 /* 18 */
