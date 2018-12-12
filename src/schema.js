@@ -1,10 +1,9 @@
 import is from './is';
 import DefaultNodesFactory from './state/default_factory';
 import Type from './type';
-import { Map, List } from './state';
+import { Map, List, Null } from './state';
 import { sym } from './utils';
 import { ValidationError, RequirementError, UndeclaredError } from './error';
-import { State } from '.';
 
 export default class Schema {
   constructor(name = 'Unnamed', fileds, strict = false) {
@@ -138,7 +137,7 @@ export default class Schema {
 
   serialize(obj) {
     if (is._null(obj)) {
-      return DefaultNodesFactory.get(obj);
+      return new Null();
     }
     const result = {};
 
@@ -167,7 +166,7 @@ export default class Schema {
 
   parse(value) {
     if (is._null(value)) {
-      return new State.Null();
+      return new Null();
     }
     return new Map(value, this);
   }

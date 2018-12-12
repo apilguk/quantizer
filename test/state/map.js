@@ -110,4 +110,11 @@ describe('Map', () => {
 
     assert.deepEqual(map.get(), { x: null });
   });
+
+  it('null values handles gracefully', () => {
+    const schema = new Schema('A', { x: new Schema('Nested', { x: Type.Map }) });
+    const map = new State.Map({ x: null }, schema);
+
+    assert.deepEqual({ x: null }, map.get());
+  });
 });
