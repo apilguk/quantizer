@@ -4,6 +4,7 @@ import Number from './number';
 import String from './string';
 import List from './list';
 import Map from './map';
+import Null from './null';
 import ObjectID from './object_id';
 import UUID from './uuid';
 
@@ -16,5 +17,6 @@ export {
   Map,
   List,
   ObjectID,
+  Null,
   UUID,
 };

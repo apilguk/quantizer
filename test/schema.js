@@ -605,5 +605,23 @@ describe('Schema', () => {
         name: 'CellSchema',
       });
     });
+
+    it('validation is soft for nulls', () => {
+      const schema = new Schema('A', { x: Type.String });
+      const validationError = schema.validate({
+        x: null,
+      });
+
+      assert.deepEqual(validationError.count, 0);
+    });
+
+    it('validation is soft for nested nulls', () => {
+      const schema = new Schema('A', { x: new Schema('Nested', { x: Type.Map }) });
+      const validationError = schema.validate({
+        x: null,
+      });
+
+      assert.deepEqual(validationError.count, 0);
+    });
   });
 });
