@@ -4,6 +4,7 @@ import Type from './type';
 import { Map, List } from './state';
 import { sym } from './utils';
 import { ValidationError, RequirementError, UndeclaredError } from './error';
+import { State } from '.';
 
 export default class Schema {
   constructor(name = 'Unnamed', fileds, strict = false) {
@@ -76,13 +77,18 @@ export default class Schema {
   }
 
   validate(obj) {
-    const objKeys = Object.keys(obj);
-    const fieldsKeys = Object.keys(this.fields);
     let errors = {
       name: this.name,
       count: 0,
       map: {},
     };
+
+    if (is._null(obj)) {
+      return errors;
+    }
+
+    const objKeys = Object.keys(obj);
+    const fieldsKeys = Object.keys(this.fields);
 
     if (!is.map(obj)) {
       errors = new ValidationError('Map', Type.DefineType(obj));
@@ -131,6 +137,9 @@ export default class Schema {
   }
 
   serialize(obj) {
+    if (is._null(obj)) {
+      return DefaultNodesFactory.get(obj);
+    }
     const result = {};
 
     for (const key in obj) {
@@ -157,12 +166,15 @@ export default class Schema {
   }
 
   parse(value) {
+    if (is._null(value)) {
+      return new State.Null();
+    }
     return new Map(value, this);
   }
 
   static ValidateSchema(fields) {
     if (!fields) {
-      throw new Error('Schema: Fields declaration udefined.');
+      throw new Error('Schema: Fields declaration undefined.');
     }
 
     for (const key in fields) {

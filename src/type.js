@@ -48,7 +48,7 @@ export default class Type {
     if (this.nested) {
       errors.list = [];
 
-      if (!this.validationFunction(value)) {
+      if (!this.validationFunction(value) && !is._null(value)) {
         return new ValidationError('List', Type.DefineType(value));
       }
 
@@ -75,7 +75,7 @@ export default class Type {
       return errors;
     }
 
-    if (!this.validationFunction(value)) {
+    if (!this.validationFunction(value) && !is._null(value)) {
       errors = new ValidationError(this.name, Type.DefineType(value));
 
       return errors;
