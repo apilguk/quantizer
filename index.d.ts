@@ -5,35 +5,38 @@ export class TypedNode<T> {
 
 export module State {
   export class Map<T = {}> extends TypedNode<T> {
+    constructor(value?: T, schema?: Schema) 
     public get(): T;
     public get<K extends keyof T>(key: K): T[K];
     public get<K extends keyof T>(...args: K[]): Pick<T, K>;
-    public set(a: T): void;
+    public set(source: T): this;
     public merge<K extends keyof T>(a: Partial<T>): void;
-    public merge<K extends keyof T>(a: K, b: T[K]): void;
-    public setAttribute<K extends keyof T>(a: K, b: T[K]): void;
+    public setAttribute<K extends keyof T>(a: K, b: T[K]): this;
     public getAttribute<K extends keyof T>(a: K): T[K];
-    public map(handler: (value: any, key?: string) => T): T;
+    public map<K extends keyof T, V>(handler: (value: T[K], key?: K) => V): V[];
     public find<K extends keyof T>(key: K): any;
     public clone(): this;
     public toJSON(): string;
     public fromJSON(str: string): this;
   }
 
-  export class List<T, R> extends TypedNode<T[]> {
+  export class List<T, R> {
+    constructor(value?: Partial<T>[], schema?: Schema) 
+    length: number;
     public set(source: Partial<T>[]): void;
-    public get(): T[];
     public get<K extends keyof T>(key: K): T[K][];
     public get<K extends keyof T>(...args: K[]): Pick<T, K>[];
-    public clear(): void;
-    public concat(source: T[]): void;
-    public push(element: T): void;
-    public map(handler: (value: T, index?: string) => any): T[];
+    public clear(): this;
+    public concat(source: Partial<T>[]): this;
+    public push(element: Partial<T>): this;
+    public map<V>(handler: (value: T, index?: string) => V): V[];
     public at(index: number): R | undefined;
     public where<K extends keyof T>(key: K, value: T[K]): R | undefined;
-    public filter(index: number): R[];
+    public where(map: Partial<T>): R | undefined;
+    public filter(handler: (item: R) => boolean): R[];
     public sortBy<K extends keyof T>(key: K): this;
-    public remove(toRemove: any): void;
+    public remove(toRemove: R[]): void;
+    public remove(toRemove: R): void;
   }
 
   export class Boolean extends TypedNode<boolean> { }
